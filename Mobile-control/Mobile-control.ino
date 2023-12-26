@@ -1,5 +1,6 @@
 #include "QEI.h"
 #include "setMotor.h"
+#include "Kinematics.h"
 
 /*-----QEI(encA, encB)------*/
 

@@ -3,7 +3,7 @@
 #include "math.h"
 #include "Arduino.h"
 
-setMotor::setMotor(int32_t _PWM_PIN, uint8_t _DIR_PIN, uint32_t _MOTOR_BASE_FREQ, uint16_t _MOTOR_TIMER_14_BIT)
+setMotor::setMotor(int16_t _PWM_PIN, uint8_t _DIR_PIN, uint32_t _MOTOR_BASE_FREQ, uint16_t _MOTOR_TIMER_14_BIT)
 {
     PWM_PIN = _PWM_PIN;
     DIR_PIN = _DIR_PIN;
@@ -18,7 +18,7 @@ void setMotor::begin()
     ledcAttach(PWM_PIN, MOTOR_BASE_FREQ, MOTOR_TIMER_14_BIT);
 }
 
-void setMotor::setPWM(int32_t PWM)
+void setMotor::setPWM(int16_t PWM)
 {   
     if(PWM >= 0)
     {
