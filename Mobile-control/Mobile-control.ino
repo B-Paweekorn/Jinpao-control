@@ -33,6 +33,11 @@ long counter3 = 0;
 #define MOTOR_3_DIR_PIN  2
 #define MOTOR_4_DIR_PIN  5
 
+setMotor MOTOR_1(MOTOR_1_PWM_PIN, MOTOR_1_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+setMotor MOTOR_2(MOTOR_2_PWM_PIN, MOTOR_2_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+setMotor MOTOR_3(MOTOR_3_PWM_PIN, MOTOR_3_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+setMotor MOTOR_4(MOTOR_4_PWM_PIN, MOTOR_4_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+
 /*-----Config ADC-----*/
 #define ADC_SDA 13 
 #define ADC_SCL 14
@@ -41,49 +46,32 @@ long counter3 = 0;
 #define BNO_SDA 15
 #define BNO_SCL 16
 
-setMotor MOTOR_1(MOTOR_1_PWM_PIN, MOTOR_1_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-setMotor MOTOR_2(MOTOR_2_PWM_PIN, MOTOR_2_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-setMotor MOTOR_3(MOTOR_3_PWM_PIN, MOTOR_3_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-setMotor MOTOR_4(MOTOR_4_PWM_PIN, MOTOR_4_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
 void setup() {
   Serial.begin(115200);
 
-  /*-----Setup Motor Start-----*/
-
-  // ledcAttach(MOTOR_1_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-  // ledcAttach(MOTOR_2_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-  // ledcAttach(MOTOR_3_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-  // ledcAttach(MOTOR_4_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-
-  // pinMode(MOTOR_1_DIR_PIN, OUTPUT);
-  // pinMode(MOTOR_2_DIR_PIN, OUTPUT);
-  // pinMode(MOTOR_3_DIR_PIN, OUTPUT);
-  // pinMode(MOTOR_4_DIR_PIN, OUTPUT);
-
-
-  /*-----Setup Motor End-----*/
-
-  /*-----Setup QEI Start-----*/
+  /*-----Setup Hardware Start-----*/
+  
+  MOTOR_1.begin();
+  MOTOR_2.begin();
+  MOTOR_3.begin();
+  MOTOR_4.begin();
 
   enc0.begin();
   enc1.begin();
   enc2.begin();
   enc3.begin();
 
-  /*-----Setup QEI End-------*/
+  /*-----Setup Hardware End-------*/
 }
 
 void loop() {
-  /*-----Test PWM Start-----*/
-  // 0-16383
-  MOTOR_1.setPWM(100);
-  MOTOR_2.setPWM(100);
-  MOTOR_3.setPWM(100);
-  MOTOR_4.setPWM(100);
-  // ledcWrite(MOTOR_1_PWM_PIN, 4096);
-  // ledcWrite(MOTOR_2_PWM_PIN, 8192);
-  // ledcWrite(MOTOR_3_PWM_PIN, 12288);
-  // ledcWrite(MOTOR_4_PWM_PIN, 16383);
+
+  /*-----Test PWM Start (0 - 16383)-----*/
+  // %duty 0 - 16382
+  MOTOR_1.setPWM(4096);
+  MOTOR_2.setPWM(8192);
+  MOTOR_3.setPWM(12288);
+  MOTOR_4.setPWM(16383);
 
   /*-----Test PWM End-------*/
 
@@ -93,8 +81,6 @@ void loop() {
   counter1 += enc1.get_diff_count();
   counter2 += enc2.get_diff_count();
   counter3 += enc3.get_diff_count();
-
-  // %duty 0 - 16382
 
   uint32_t dt = micros() - time;
 
