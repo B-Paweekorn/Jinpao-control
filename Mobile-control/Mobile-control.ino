@@ -1,4 +1,5 @@
 #include "QEI.h"
+#include "setMotor.h"
 
 /*-----QEI(encA, encB)------*/
 
@@ -40,20 +41,25 @@ long counter3 = 0;
 #define BNO_SDA 15
 #define BNO_SCL 16
 
+setMotor MOTOR_1(MOTOR_1_PWM_PIN, MOTOR_1_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+setMotor MOTOR_2(MOTOR_2_PWM_PIN, MOTOR_2_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+setMotor MOTOR_3(MOTOR_3_PWM_PIN, MOTOR_3_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+setMotor MOTOR_4(MOTOR_4_PWM_PIN, MOTOR_4_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
 void setup() {
   Serial.begin(115200);
 
   /*-----Setup Motor Start-----*/
 
-  ledcAttach(MOTOR_1_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-  ledcAttach(MOTOR_2_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-  ledcAttach(MOTOR_3_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
-  ledcAttach(MOTOR_4_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+  // ledcAttach(MOTOR_1_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+  // ledcAttach(MOTOR_2_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+  // ledcAttach(MOTOR_3_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
+  // ledcAttach(MOTOR_4_PWM_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER_14_BIT);
 
-  pinMode(MOTOR_1_DIR_PIN, OUTPUT);
-  pinMode(MOTOR_2_DIR_PIN, OUTPUT);
-  pinMode(MOTOR_3_DIR_PIN, OUTPUT);
-  pinMode(MOTOR_4_DIR_PIN, OUTPUT);
+  // pinMode(MOTOR_1_DIR_PIN, OUTPUT);
+  // pinMode(MOTOR_2_DIR_PIN, OUTPUT);
+  // pinMode(MOTOR_3_DIR_PIN, OUTPUT);
+  // pinMode(MOTOR_4_DIR_PIN, OUTPUT);
+
 
   /*-----Setup Motor End-----*/
 
@@ -69,11 +75,15 @@ void setup() {
 
 void loop() {
   /*-----Test PWM Start-----*/
-
-  ledcWrite(MOTOR_1_PWM_PIN, 4096);
-  ledcWrite(MOTOR_2_PWM_PIN, 8192);
-  ledcWrite(MOTOR_3_PWM_PIN, 12288);
-  ledcWrite(MOTOR_4_PWM_PIN, 16383);
+  // 0-16383
+  MOTOR_1.setPWM(100);
+  MOTOR_2.setPWM(100);
+  MOTOR_3.setPWM(100);
+  MOTOR_4.setPWM(100);
+  // ledcWrite(MOTOR_1_PWM_PIN, 4096);
+  // ledcWrite(MOTOR_2_PWM_PIN, 8192);
+  // ledcWrite(MOTOR_3_PWM_PIN, 12288);
+  // ledcWrite(MOTOR_4_PWM_PIN, 16383);
 
   /*-----Test PWM End-------*/
 
