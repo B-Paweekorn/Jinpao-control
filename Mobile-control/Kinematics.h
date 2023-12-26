@@ -1,3 +1,6 @@
+#ifndef KINEMATICS_H
+#define KINEMATICS_H
+
 #include <math.h>
 class Kinematics {
 private:
@@ -38,6 +41,8 @@ private:
 public:
 
   RadPS Inverse_Kinematics(float vx, float vy, float wz);
-  Velocity Forward_Kinematics(float rpm_FL, float rpm_FR, float rpm_BL, float rpm_BR);
+  Velocity Forward_Kinematics(float RadPS_FL, float RadPS_FR, float RadPS_BL, float RadPS_BR);
   Kinematics(float _wheelDiameter, float _lx, float _ly);
 };
+
+#endif  // KINEMATICS_H
