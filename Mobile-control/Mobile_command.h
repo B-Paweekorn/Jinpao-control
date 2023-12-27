@@ -1,16 +1,14 @@
-#include QEI.h
-#include <inttypes.h>
+#ifndef _MOBILE_COMMAND_H
+#define _MOBILE_COMMAND_H
 
 class Mobile_command
 {
     private:
       float32_t v_x;
       float32_t v_y;
-      float32_t omega;
-      // output
-      float32_t output[4];
-    
+      float32_t omega_z;
     public:
-      Mobile_command();
-
+      SetRobotvel(float32_t v_x, float32_t v_y, float32_t omega_z);     
 };
+
+#endif
