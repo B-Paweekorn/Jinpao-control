@@ -1,3 +1,5 @@
+#ifndef SETMOTOR_H
+#define SETMOTOR_H
 #include <inttypes.h>
 
 class setMotor
@@ -13,3 +15,4 @@ class setMotor
       void begin(); //set pin mode
       void setPWM(int16_t PWM); //set motor's PWM 
 };
+#endif

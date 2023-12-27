@@ -47,6 +47,11 @@ setMotor MOTOR_4(MOTOR_4_PWM_PIN, MOTOR_4_DIR_PIN, MOTOR_BASE_FREQ , MOTOR_TIMER
 #define BNO_SDA 15
 #define BNO_SCL 16
 
+/*-----Config Robot Base-----*/
+#define WHEEL_DIAMETER 25 //meter
+
+Kinematics Robot();
+
 void setup() {
   Serial.begin(115200);
 
