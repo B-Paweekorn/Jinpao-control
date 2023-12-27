@@ -1,16 +1,21 @@
-#include QEI.h
+#ifndef MOBILE_COMMAND_H
+#define MOBILE_COMMAND_H
+
+#include "QEI.h"
+#include "setMotor.h"
+#include "Kinematics.h"
+#include "PID.h"
 #include <inttypes.h>
 
 class Mobile_command
 {
     private:
-      float32_t v_x;
-      float32_t v_y;
-      float32_t omega;
-      // output
-      float32_t output[4];
+      float v_x;
+      float v_y;
+      float omega;
     
     public:
       Mobile_command();
 
 };
+#endif

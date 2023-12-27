@@ -1,7 +1,7 @@
 #include "QEI.h"
 #include "setMotor.h"
 #include "Kinematics.h"
-
+#include "PID.h"
 /*-----QEI(encA, encB)------*/
 
 QEI enc0(17, 18); 
