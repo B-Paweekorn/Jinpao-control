@@ -16,6 +16,7 @@ class Mobile_command
     
     public:
       Mobile_command();
+      
 
 };
 #endif
