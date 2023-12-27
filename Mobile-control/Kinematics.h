@@ -35,17 +35,19 @@ private:
   struct Position {
     double x;
     double y;
-    double theta; //in degree
+    double theta;  //in degree
   };
 
   Position current_position;
 
 public:
 
+  Kinematics(float wheel_diameter, float lx, float ly);
   RadPS Inverse_Kinematics(float vx, float vy, float wz);
   Velocity Forward_Kinematics_Velocity(float radps_fl, float radps_fr, float radps_bl, float radps_br);
   Position Forward_Kinematics_Position(float radps_fl, float radps_fr, float radps_bl, float radps_br, Position current_position);
-  Kinematics(float wheel_diameter, float lx, float ly);
+  
+
 };
 
 #endif  // KINEMATICS_H

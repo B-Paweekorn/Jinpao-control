@@ -18,14 +18,14 @@ private:
   float e_prev = 0;
   float e_prev2 = 0;
   int32_t pos_prev = 0;
-  float setRads = 0;
+  float targetRads = 0;  // Renamed from setRads
   float counts_per_rev = 4000.0;
   float a = 45;
 
 public:
   PID(setMotor* _motor, QEI* _enc, float _kp, float _ki, float _kd);  // Constructor that takes a setMotor object
   void compute();
-  void setRads(float _setRads);
+  void setRads(float _setRads);  // This remains the same
   void setK(float _kp, float _ki, float _kd);
 };
 
