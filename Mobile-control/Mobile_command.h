@@ -5,18 +5,20 @@
 #include "setMotor.h"
 #include "Kinematics.h"
 #include "PID.h"
-#include <inttypes.h>
 
-class Mobile_command
-{
-    private:
-      float v_x;
-      float v_y;
-      float omega;
-    
-    public:
-      Mobile_command();
-      
+class Mobile_command {
+private:
+    static const int NUM_MOTORS = 4; // Number of motors, encoders, and PIDs
+
+    setMotor* motors[NUM_MOTORS];
+    QEI* encoders[NUM_MOTORS];
+    PID* pids[NUM_MOTORS];
+    Kinematics* kinematics;
+
+public:
+    Mobile_command(setMotor* _motors[], QEI* _encoders[], PID* _pids[], Kinematics* _kinematics);
+    void control(float _vx, float _vy, float _wz);
 
 };
+
 #endif
