@@ -5,11 +5,26 @@
 #include "Mobile_command.h"
 #include "AS5600.h"
 #include "Wire.h"
+#include "KalmanFilter.h"
+#include <math.h>
 
 AS5600 as5600;  // Assuming AS5600 is compatible with TwoWire
 
 #define I2C_SDA 13
 #define I2C_SCL 14
+
+//Print loop Time (100 Hz)
+unsigned long prev_timestep_print;
+unsigned long current_timestep_print;
+unsigned long timestamp_print = 0;
+int timestep_print = 10000;
+//Control loop Time (1000 Hz)
+unsigned long prev_timestep;
+unsigned long current_timestep;
+unsigned long timestamp = 0;
+int timestep = 1000;
+
+unsigned long tcur;
 /*-----QEI(encA, encB)------*/
 
 QEI enc1(17, 18);
@@ -55,16 +70,24 @@ setMotor MOTOR_4(MOTOR_4_PWM_PIN, MOTOR_4_DIR_PIN, MOTOR_BASE_FREQ, MOTOR_TIMER_
 #define BNO_SDA 15
 #define BNO_SCL 16
 
+/*-----Config Kalman -----*/
+KalmanFilter kf1;
+KalmanFilter kf2;
+KalmanFilter kf3;
+KalmanFilter kf4;
+
+int32_t rawAngle_prev, count;
+
 /*-----Config PID -----*/
-PID pid1(&MOTOR_1, &enc1, 1, 0.0f, 0.0f);
-PID pid2(&MOTOR_2, &enc2, 0.0f, 0.0f, 0.0f);
-PID pid3(&MOTOR_3, &enc3, 0.0f, 0.0f, 0.0f);
-PID pid4(&MOTOR_4, &enc4, 0.0f, 0.0f, 0.0f);
+PID pid1(&MOTOR_1, &enc1, &kf1, 10, 0.1f, 0.0f);
+PID pid2(&MOTOR_2, &enc2, &kf2, 10, 0.1f, 0.0f);
+PID pid3(&MOTOR_3, &enc3, &kf3, 10, 0.1f, 0.0f);
+PID pid4(&MOTOR_4, &enc4, &kf4, 10, 0.1f, 0.0f);
 
 /*-----Config Robot Base-----*/
-#define WHEEL_DIAMETER 0.25  //meter
-#define LX 0.5               //meter
-#define LY 0.5               //meter
+#define WHEEL_DIAMETER 0.1524  //meter
+#define LX 0.2105             //meter
+#define LY 0.31               //meter
 
 Kinematics kinematics(WHEEL_DIAMETER, LX, LY);
 
@@ -76,7 +99,16 @@ PID* pids[4] = { &pid1, &pid2, &pid3, &pid4 };
 
 Mobile_command Mobile(motors, encoders, pids, &kinematics);
 
+int32_t AS5600_Unwrap(int32_t rawAngle) {
+  if (rawAngle - rawAngle_prev <= -2500) {
+    count++;
+  } else if (rawAngle - rawAngle_prev >= 2500) {
+    count--;
+  }
 
+  rawAngle_prev = rawAngle;
+  return count * 4096 + rawAngle;
+}
 
 void setup() {
   Serial.begin(115200);
@@ -102,10 +134,46 @@ void setup() {
   /*-----Setup Hardware End-------*/
 }
 
+//Generate Sinwave
+float dummy_sinwave = 0;
+#define SIMUL_PERIOD 0.3  // oscillating period [s]
+#define SIMUL_AMP 8.0     // oscillation amplitude
 void loop() {
-  float v = as5600.getAngularSpeed(AS5600_MODE_RADIANS);
-  Mobile.control(10, 0, 0, v);
-  Serial.println(pid1.u);
+
+
+  //Print loop
+  current_timestep_print = micros();
+  if (current_timestep_print - timestamp_print > timestep_print) {
+    // Serial.print(current_timestep_print - timestamp_print);
+    // Serial.print(" ");
+    timestamp_print = micros();
+
+    // Serial.print(as5600.getAngularSpeed(AS5600_MODE_RADIANS));  //Velocity
+    // Serial.print(" ");
+    Serial.print(pid1.targetRads);
+    Serial.print(" ");
+    Serial.println(pid1.v);
+  }
+  //Control loop
+  current_timestep = micros();
+  if (current_timestep - timestamp > timestep) {
+    // Serial.println(current_timestep - timestamp);
+    timestamp = micros();
+    tcur++;
+    dummy_sinwave = SIMUL_AMP * sin(tcur / 1000.0 / SIMUL_PERIOD);
+    int32_t p = AS5600_Unwrap(as5600.rawAngle());
+    // Mobile.control(5, 0, 0, p);
+    pid1.setRads(2*M_PI);
+    pid1.compute(p);
+    
+    
+
+    //Serial.println(current_timestep - timestamp);
+  }
+
+
+
+
   /*-----Test PWM Start (0 - 16383)-----*/
   // %duty 0 - 16382
   // MOTOR_1.setPWM(4096);

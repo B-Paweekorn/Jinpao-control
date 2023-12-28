@@ -1,11 +1,13 @@
+#include <stdint.h>
 #include "PID.h"
 
-PID::PID(setMotor* _motor, QEI* _enc, float _kp, float _ki, float _kd) {
+PID::PID(setMotor* _motor, QEI* _enc, KalmanFilter* _kf, float _kp, float _ki, float _kd) {
   motor = _motor;
   enc = _enc;
   kp = _kp;
   ki = _ki;
   kd = _kd;
+  kf = _kf;
 }
 
 void PID::setK(float _kp, float _ki, float _kd) {
@@ -15,20 +17,24 @@ void PID::setK(float _kp, float _ki, float _kd) {
 }
 
 void PID::setRads(float _setRads) {
-  if (_setRads > targetRads) {         
-    targetRads = targetRads + a * dt;  
-  } else if (_setRads < targetRads) {  
-    targetRads = targetRads - a * dt;  
+  if (_setRads > targetRads) {
+    targetRads = targetRads + a * dt;
+  } else if (_setRads < targetRads) {
+    targetRads = targetRads - a * dt;
   }
 }
-void PID::compute(float _v) {
+void PID::compute(int32_t _p) {
+
 
   int pos = enc->get_diff_count();
 
   float velocity = (pos - pos_prev) / dt;
   v = velocity / counts_per_rev * 2 * M_PI;
 
-  float e = targetRads - _v;
+  v = kf->EstimateSpeed(_p, u);
+
+  // v = kf->EstimateSpeed(pos , u);
+  float e = targetRads - v;
 
   u = u_prev + (kp + ki + kd) * e + (kp + 2 * kd) * e_prev + kd * e_prev2;
 
