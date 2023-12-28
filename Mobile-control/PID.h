@@ -7,6 +7,10 @@
 
 class PID {
 private:
+
+
+public:
+
   setMotor* motor;  // Pointer to a setMotor object
   QEI* enc;
   float dt = 1 / 1000.0;
@@ -22,9 +26,8 @@ private:
   float counts_per_rev = 4000.0;
   float a = 45;
 
-public:
   PID(setMotor* _motor, QEI* _enc, float _kp, float _ki, float _kd);  // Constructor that takes a setMotor object
-  void compute();
+  void compute(float _v);
   void setRads(float _setRads);  // This remains the same
   void setK(float _kp, float _ki, float _kd);
 };

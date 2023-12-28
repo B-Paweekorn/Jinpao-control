@@ -3,7 +3,13 @@
 #include "Kinematics.h"
 #include "PID.h"
 #include "Mobile_command.h"
+#include "AS5600.h"
+#include "Wire.h"
 
+AS5600 as5600;  // Assuming AS5600 is compatible with TwoWire
+
+#define I2C_SDA 13
+#define I2C_SCL 14
 /*-----QEI(encA, encB)------*/
 
 QEI enc1(17, 18);
@@ -50,7 +56,7 @@ setMotor MOTOR_4(MOTOR_4_PWM_PIN, MOTOR_4_DIR_PIN, MOTOR_BASE_FREQ, MOTOR_TIMER_
 #define BNO_SCL 16
 
 /*-----Config PID -----*/
-PID pid1(&MOTOR_1, &enc1, 0.0f, 0.0f, 0.0f);
+PID pid1(&MOTOR_1, &enc1, 1, 0.0f, 0.0f);
 PID pid2(&MOTOR_2, &enc2, 0.0f, 0.0f, 0.0f);
 PID pid3(&MOTOR_3, &enc3, 0.0f, 0.0f, 0.0f);
 PID pid4(&MOTOR_4, &enc4, 0.0f, 0.0f, 0.0f);
@@ -86,21 +92,26 @@ void setup() {
   enc2.begin();
   enc3.begin();
   enc4.begin();
+  Wire.begin(I2C_SDA, I2C_SCL);  // Initialize I2C communication
 
-  Mobile.control(2, 0, 0);
-  pid1.setK(1, 1, 1);
+  as5600.begin();                          // Initialize AS5600 sensor
+  as5600.setDirection(AS5600_CLOCK_WISE);  // Set direction
+
+  // pid1.setK(1, 1, 1);
 
   /*-----Setup Hardware End-------*/
 }
 
 void loop() {
-
+  float v = as5600.getAngularSpeed(AS5600_MODE_RADIANS);
+  Mobile.control(10, 0, 0, v);
+  Serial.println(pid1.u);
   /*-----Test PWM Start (0 - 16383)-----*/
   // %duty 0 - 16382
-  MOTOR_1.setPWM(4096);
-  MOTOR_2.setPWM(8192);
-  MOTOR_3.setPWM(12288);
-  MOTOR_4.setPWM(16383);
+  // MOTOR_1.setPWM(4096);
+  // MOTOR_2.setPWM(8192);
+  // MOTOR_3.setPWM(12288);
+  // MOTOR_4.setPWM(16383);
 
   /*-----Test PWM End-------*/
 
@@ -113,15 +124,15 @@ void loop() {
 
   uint32_t dt = micros() - time;
 
-  Serial.print(dt);
-  Serial.print(' ');
-  Serial.print(counter0);
-  Serial.print(' ');
-  Serial.print(counter1);
-  Serial.print(' ');
-  Serial.print(counter2);
-  Serial.print(' ');
-  Serial.println(counter3);
+  // Serial.print(dt);
+  // Serial.print(' ');
+  // Serial.print(counter0);
+  // Serial.print(' ');
+  // Serial.print(counter1);
+  // Serial.print(' ');
+  // Serial.print(counter2);
+  // Serial.print(' ');
+  // Serial.println(counter3);
 }
 
 void test() {

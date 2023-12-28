@@ -15,9 +15,11 @@ private:
     PID* pids[NUM_MOTORS];
     Kinematics* kinematics;
 
+    
+
 public:
     Mobile_command(setMotor* _motors[], QEI* _encoders[], PID* _pids[], Kinematics* _kinematics);
-    void control(float _vx, float _vy, float _wz);
+    void control(float _vx, float _vy, float _wz, float _v);
 
 };
 

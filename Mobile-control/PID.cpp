@@ -21,14 +21,14 @@ void PID::setRads(float _setRads) {
     targetRads = targetRads - a * dt;  
   }
 }
-void PID::compute() {
+void PID::compute(float _v) {
 
   int pos = enc->get_diff_count();
 
   float velocity = (pos - pos_prev) / dt;
   v = velocity / counts_per_rev * 2 * M_PI;
 
-  float e = targetRads - v;
+  float e = targetRads - _v;
 
   u = u_prev + (kp + ki + kd) * e + (kp + 2 * kd) * e_prev + kd * e_prev2;
 
