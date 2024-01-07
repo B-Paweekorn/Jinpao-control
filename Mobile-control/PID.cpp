@@ -55,7 +55,7 @@ float PID::calculateV_in(float omega, float i) {
   return scaleToPWM(v_in);
 }
 
-void PID::compute(int32_t _p) {
+void PID::compute() {
 
 
   int pos = enc->get_diff_count();
@@ -63,7 +63,7 @@ void PID::compute(int32_t _p) {
   float velocity = (pos - pos_prev) / dt;
   v = velocity / counts_per_rev * 2 * M_PI;
 
-  v = kf->EstimateSpeed(_p, u);
+  v = kf->EstimateSpeed(v, u);
 
   // v = kf->EstimateSpeed(pos , u);
 
@@ -73,11 +73,11 @@ void PID::compute(int32_t _p) {
   // Calculate PWM
   PWM_feedforward = calculateV_in(omega, i);
 
-  //  u += (kp + ki + kd) * e + (kp + 2 * kd) * e_prev + kd * e_prev2;
-  // u_out = u + PWM_feedforward;
+  u += (kp + ki + kd) * e + (kp + 2 * kd) * e_prev + kd * e_prev2;
+  u_out = u + PWM_feedforward;
 
 
-  
+
 
   if (u > 16383) {
     u = 16383;

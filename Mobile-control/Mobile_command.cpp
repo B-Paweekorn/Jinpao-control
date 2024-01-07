@@ -13,7 +13,7 @@ Mobile_command::Mobile_command(setMotor* _motors[], QEI* _encoders[], PID* _pids
 }
 
 
-void Mobile_command::control(float _vx, float _vy, float _wz, float _v) {
+void Mobile_command::control(float _vx, float _vy, float _wz) {
   Kinematics::RadPS wheel_radps = kinematics->Inverse_Kinematics(_vx, _vy, _wz);
   
   // Set the target rotational speed for each wheel's PID controller
@@ -24,6 +24,6 @@ void Mobile_command::control(float _vx, float _vy, float _wz, float _v) {
 
   // Compute PID for each wheel
   for (int i = 0; i < NUM_MOTORS; ++i) {
-    pids[i]->compute(_v);
+    pids[i]->compute();
   }
 }

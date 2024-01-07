@@ -9,22 +9,33 @@
 
 #include <KalmanFilter.h>
 
-KalmanFilter::KalmanFilter() {
+// KalmanFilter::KalmanFilter(float *_A_data, float *_B_data, float *_C_data, float *_Q_data, float *_R_data) {
+
+//   matrix buf1(4, 1);
+//   predictX_old = buf1;
+//   matrix buf2(4, 4);
+//   P_old = buf2;
+//   float buf_val[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
+//   matrix buf3(4, 4, buf_val);
+//   I33 = buf3;
+// }
+
+KalmanFilter::KalmanFilter(float *_A_data, float *_B_data, float *_C_data, float *_Q_data, float *_R_data) {
 
   //Init Kalman Matrix
-  matrix A_init(4, 4, A_data);
+  matrix A_init(4, 4, _A_data);
   A = A_init;
-  matrix B_init(4, 1, B_data);
+  matrix B_init(4, 1, _B_data);
   B = B_init;
-  matrix C_init(1, 4, C_data);
+  matrix C_init(1, 4, _C_data);
   C = C_init;
   matrix D_init(4, 1);
   D = D_init;
-  matrix R_init(1, 1, R_data);
+  matrix R_init(1, 1, _R_data);
   R = R_init;
   matrix G_init(4, 1, G_data);
   G = G_init;
-  matrix Q_init(1, 1, Q_data);
+  matrix Q_init(1, 1, _Q_data);
   Q = Q_init;
 
   matrix buf1(4, 1);
@@ -37,6 +48,7 @@ KalmanFilter::KalmanFilter() {
 }
 
 void KalmanFilter::init() {
+
   float P_val[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   matrix P_init(4, 4, P_val);
   P = P_init;
@@ -116,11 +128,10 @@ void KalmanFilter::doResult() {
   resultX = predictX;
 }
 
-float KalmanFilter::EstimateSpeed(int32_t measurePulse, int16_t PWM) {
+float KalmanFilter::EstimateSpeed(double _measureRad, float Vin) {
 
   //Update Observer and Command
-  measureRad = measurePulse * PI * 2.0 / 4096;
-  Vin = PWM * 18.0 / 16383;
+  measureRad = _measureRad;
   updated_U[0] = Vin;
   updated_Ymeas[0] = measureRad;
   U.read(updated_U);
