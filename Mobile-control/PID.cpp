@@ -23,6 +23,38 @@ void PID::setRads(float _setRads) {
     targetRads = targetRads - a * dt;
   }
 }
+
+float PID::scaleToPWM(float v_in) {
+  // Constants for PWM scaling
+  const float PWM_min = -16383;
+  const float PWM_max = 16383;
+  const float v_in_min = -18;
+  const float v_in_max = 18;
+
+  // Scale v_in to the PWM range
+  float PWM = PWM_min + (v_in - v_in_min) / (v_in_max - v_in_min) * (PWM_max - PWM_min);
+
+  // Limit PWM to its defined range
+  PWM = std::max(PWM_min, std::min(PWM, PWM_max));
+
+
+  return PWM;
+}
+
+float PID::calculateV_in(float omega, float i) {
+  // Constants for the motor and system parameters
+  const float R = 0.6367f;
+  const float ke = 0.5265f;
+  const float kt = ke / 2.0f;
+  const float b = 0.019688440522932f;
+
+  // Calculate v_in based on the formula
+  float v_in = ke * omega + i * R;
+
+  // Convert v_in to PWM
+  return scaleToPWM(v_in);
+}
+
 void PID::compute(int32_t _p) {
 
 
@@ -34,9 +66,18 @@ void PID::compute(int32_t _p) {
   v = kf->EstimateSpeed(_p, u);
 
   // v = kf->EstimateSpeed(pos , u);
-  float e = targetRads - v;
 
-  u = u_prev + (kp + ki + kd) * e + (kp + 2 * kd) * e_prev + kd * e_prev2;
+  float omega = targetRads;  // Replace with actual value
+  float i = 0.0;             // Replace with actual value
+  e = targetRads - v;
+  // Calculate PWM
+  PWM_feedforward = calculateV_in(omega, i);
+
+  //  u += (kp + ki + kd) * e + (kp + 2 * kd) * e_prev + kd * e_prev2;
+  // u_out = u + PWM_feedforward;
+
+
+  
 
   if (u > 16383) {
     u = 16383;

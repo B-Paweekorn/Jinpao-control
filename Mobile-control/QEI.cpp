@@ -1,3 +1,4 @@
+#include "esp32-hal-gpio.h"
 #include "driver/pulse_cnt.h"
 #include "QEI.h"
 
@@ -5,6 +6,7 @@ QEI ::QEI(int encA, int encB, int limit, uint32_t filt)
   : encA_pin(encA), encB_pin(encB), pcnt_limit(limit), filter_ns(filt) {}
 
 void QEI ::begin() {
+
   pcnt_unit_config_t unit_config;
   unit_config.high_limit = pcnt_limit;
   unit_config.low_limit = -pcnt_limit;
