@@ -49,6 +49,8 @@ public:
   float estimateVel;
   float measureRad;
 
+  float estimateState[4] = { 0.0, 0.0, 0.0, 0.0 };
+
   KalmanFilter(float *_A_data, float *_B_data, float *_C_data, float *_Q_data, float *_R_data);
   void init();
   void doKalman_gain();
@@ -59,7 +61,7 @@ public:
   void doPredict_p();
   void doResult();
   void run();
-  float EstimateSpeed(double _measureRad, float Vin);
+  float *EstimateSpeed(double _measureRad, float Vin);
 };
 
 #endif /* INC_KALMANFILTER_H_ */

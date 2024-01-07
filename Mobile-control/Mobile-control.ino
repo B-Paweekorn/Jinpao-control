@@ -23,6 +23,9 @@ unsigned long current_timestep;
 unsigned long timestamp = 0;
 int timestep = 1000;
 
+int32_t timestep_update = 1000000;
+unsigned long timestamp_update = 0;
+
 unsigned long tcur;
 /*-----QEI(encA, encB)------*/
 
@@ -94,10 +97,10 @@ KalmanFilter kf4(CYTRON_MOTOR_260RPM_250W_MatrixA,
 int32_t rawAngle_prev, count;
 
 /*-----Config PID -----*/
-PID pid1(&MOTOR_1, &enc1, &kf1, 10, 0.0001f, 0.0f);
-PID pid2(&MOTOR_2, &enc2, &kf2, 500, 0.0f, 0.0f);
-PID pid3(&MOTOR_3, &enc3, &kf3, 500, 0.0f, 0.0f);
-PID pid4(&MOTOR_4, &enc4, &kf4, 500, 0.0f, 0.0f);
+PID pid1(&MOTOR_1, &enc1, &kf1, 7.5, 7.5, 0.0);
+PID pid2(&MOTOR_2, &enc2, &kf2, 500, 0.0, 0.0);
+PID pid3(&MOTOR_3, &enc3, &kf3, 500, 0.0, 0.0);
+PID pid4(&MOTOR_4, &enc4, &kf4, 500, 0.0, 0.0);
 
 /*-----Config Robot Base-----*/
 #define WHEEL_DIAMETER 0.1524  //meter
@@ -123,9 +126,11 @@ double q_prev = 0;
 float v_est;
 float u_volt;
 
+float set_point = 0;
+
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(230400);
 
   /*-----Setup Hardware Start-----*/
 
@@ -162,18 +167,21 @@ void loop() {
   if (current_timestep_print - timestamp_print > timestep_print) {
     // Serial.print(current_timestep_print - timestamp_print);
     // Serial.print(" ");
-    Serial.print(u_volt);
-    Serial.print(" ");
-    Serial.print((q - q_prev) * 100);
-    Serial.print(" ");
-    Serial.println(v_est);
-    q_prev = q;
-    timestamp_print = micros();
-
-
-    // Serial.print(pid1.targetRads);
+    // Serial.print(u_volt);
     // Serial.print(" ");
-    // Serial.println(pid1.v);
+    // Serial.print((q - q_prev) * 100);
+    // Serial.print(" ");
+    // Serial.println(v_est);
+    // q_prev = q;
+    timestamp_print = micros();
+    set_point = 20 * sin(2 * M_PI * 0.1 * micros() / 1.0e6);
+
+
+    Serial.print(pid1.targetRads);
+    Serial.print(" ");
+    Serial.print(pid1.i);
+    Serial.print(" ");
+    Serial.println(pid1.v);
     // Serial.print(" ");
     // Serial.print(pid1.e);
     // Serial.print(" ");
@@ -206,27 +214,41 @@ void loop() {
   if (current_timestep - timestamp > timestep) {
     // Serial.println(current_timestep - timestamp);
     timestamp = micros();
-    tcur++;
-    dummy_sinwave = SIMUL_AMP * sin(tcur / 1000.0 / SIMUL_PERIOD);
-    float u = dummy_sinwave;
-    float Vin = u * 18.0 / 16383;
-    // Mobile.control(5, 0, 0);
+    // tcur++;
+    // dummy_sinwave = SIMUL_AMP * sin(tcur / 1000.0 / SIMUL_PERIOD);
+    // float u = dummy_sinwave;
+    // float Vin = u * 18.0 / 16383;
+    // Mobile.control(100, 0, 0);
     // pid1.setRads(dummy_sinwave);
-    // pid1.setRads(2 * M_PI);
-    // pid1.compute();
+    pid1.setRads(set_point);
+    pid1.compute();
 
+
+
+
+
+
+
+
+
+
+
+    //Kalman Tuning
     // int pos = enc1.get_diff_count();
     // Serial.println(pos - pos_prev);
-    float dq = (enc1.get_diff_count() * 2 * M_PI) / counts_per_rev;
-    q += dq;
-    v_est = kf1.EstimateSpeed(q, Vin);
-    MOTOR_1.setPWM(u);
-    u_volt = u / 16383.0 * 18.0;
+    // float dq = (enc1.get_diff_count() * 2 * M_PI) / counts_per_rev;
+    // q += dq;
+    // v_est = kf1.EstimateSpeed(q, Vin);
+    // MOTOR_1.setPWM(u);
+    // u_volt = u / 16383.0 * 18.0;
 
     //Serial.println(current_timestep - timestamp);
   }
 
-
+  if (current_timestep - timestamp_update > timestep_update) {
+    timestamp_update = micros();
+    // set_point = abs(set_point - 15);
+  }
 
 
   /*-----Test PWM Start (0 - 16383)-----*/
