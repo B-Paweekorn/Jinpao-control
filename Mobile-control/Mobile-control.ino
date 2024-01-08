@@ -1,13 +1,13 @@
-#include "QEI.h"
-#include "setMotor.h"
-#include "Kinematics.h"
-#include "PID.h"
-#include "Mobile_command.h"
-#include "AS5600.h"
-#include "Wire.h"
-#include "KalmanFilter.h"
+#include <QEI.h>
+#include <setMotor.h>
+#include <Kinematics.h>
+#include <PID.h>
+#include <Mobile_command.h>
+#include <AS5600.h>
+#include <Wire.h>
+#include <KalmanFilter.h>
 #include <math.h>
-#include "Cytron_Motor_260rpm_250W.h"
+#include <Cytron_Motor_260rpm_250W.h>
 
 #define I2C_SDA 13
 #define I2C_SCL 14
@@ -149,7 +149,7 @@ void setup() {
   MOTOR_3.begin();
   MOTOR_4.begin();
 
-  kf1.init();
+  kf1.begin();
 
   // pid1.setK(1, 1, 1);
 

@@ -2,7 +2,7 @@
 #define __CYTRON_MOTOR_260RPM_250W_H__
 
 #include <stdint.h>
-#include "Motor_Model.h"
+#include <Controller.h>
 
 MotorConstant_Structure CYTRON_MOTOR_260RPM_250W_Constant = {
   .Ke = 0.5265,

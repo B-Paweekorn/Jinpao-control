@@ -46,8 +46,6 @@ float PID::calculateV_in(float omega, float i) {
   // Constants for the motor and system parameters
   const float R = 0.6367f;
   const float ke = 0.5265f;
-  const float kt = ke / 2.0f;
-  const float b = 0.019688440522932f;
 
   // Calculate v_in based on the formula
   float v_in = ke * omega + i * R;
@@ -67,7 +65,7 @@ void PID::compute() {
   float dq = (enc->get_diff_count() * 2 * M_PI) / counts_per_rev;
   q += dq;
   Vin = u_out / 16383.0 * 18;
-  estimateState = kf->EstimateSpeed(q, Vin);
+  estimateState = kf->Compute(q, Vin);
   
   // v = kf->EstimateSpeed(pos , u);
 
