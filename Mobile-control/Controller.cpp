@@ -20,6 +20,7 @@ DC_MOTOR_FFD ::DC_MOTOR_FFD(MotorConstant_Structure *_Mx)
   : Mx(_Mx) {
     Vmax = _Mx->V_max;
     Umax = _Mx->U_max;
+    qddmax = _Mx->qdd_max;
   }
 
 float DC_MOTOR_FFD ::Compute(float qd, float i) {

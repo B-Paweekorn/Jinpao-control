@@ -104,6 +104,8 @@ DC_MOTOR_FFD ffd3(&CYTRON_MOTOR_260RPM_250W_Constant);
 DC_MOTOR_FFD ffd4(&CYTRON_MOTOR_260RPM_250W_Constant);
 /*-----Config Controller Start-----*/
 
+float dt = 1 / 1000.0;
+
 ESP32_CYTRON_MD* Mx[4] = { &M1, &M2, &M3, &M4 };
 QEI* encx[4] = { &enc1, &enc2, &enc3, &enc4 };
 PID_CONTROLLER* pidx[4] = { &pid1, &pid2, &pid3, &pid4 };

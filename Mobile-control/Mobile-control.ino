@@ -17,6 +17,13 @@ unsigned long prev_timestep;
 unsigned long current_timestep;
 unsigned long timestamp = 0;
 int timestep = 1000;
+//Control loop Time (1 Hz)
+unsigned long prev_timestep_cmd;
+unsigned long current_timestep_cmd;
+unsigned long timestamp_cmd = 0;
+int timestep_cmd = 5000000;
+
+float vx, vy, vw = 0;
 
 Mobile_command Mobile(Mx, encx, pidx, ffdx, kfx, &kinematics);
 
@@ -43,10 +50,19 @@ void loop() {
     Serial.println(Mobile.fb_qd[3]);
   }
 
+  //Cmd loop
+  current_timestep_cmd = micros();
+  if (current_timestep_cmd - timestamp_cmd > timestep_cmd) {
+    timestamp_cmd = micros();
+    vx = abs(vx - 1);
+    vy = 0;
+    vw = 0;
+  }
+
   //Control loop
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    Mobile.control(0, 0, 0);
+    Mobile.control(vx, vy, 0);
   }
 }

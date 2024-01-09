@@ -1,3 +1,4 @@
+#include "esp32-hal.h"
 #include "Mobile_command.h"
 
 Mobile_command::Mobile_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], PID_CONTROLLER* _pidx[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], Kinematics* _kinematics)
@@ -33,12 +34,11 @@ void Mobile_command::begin() {
 
 void Mobile_command::control(float _vx, float _vy, float _wz) {
   Kinematics::RadPS wheel_radps = kinematics->Inverse_Kinematics(_vx, _vy, _wz);
-  float target[NUM_MOTORS] = {
-    wheel_radps.radps_fl,
-    wheel_radps.radps_fr,
-    wheel_radps.radps_bl,
-    wheel_radps.radps_br
-  };
+
+  ramp(wheel_radps.radps_fl, 0);
+  ramp(wheel_radps.radps_fl, 1);
+  ramp(wheel_radps.radps_bl, 2);
+  ramp(wheel_radps.radps_br, 3);
 
   for (int i = 0; i < NUM_MOTORS; i++) {
     fb_q[i] += encx[i]->get_diff_count() * 2 * M_PI / encx[i]->pulse_per_rev;
@@ -50,12 +50,25 @@ void Mobile_command::control(float _vx, float _vy, float _wz) {
     fb_qd[i] = kf_ptr[1];
     fb_i[i] = kf_ptr[3];
 
-    cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(target[i] - fb_qd[i]) + ffdx[i]->Compute(target[i], fb_i[i]),
-                           ffdx[i]->Umax,
-                           -1 * ffdx[i]->Umax);
+    cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(qd_target[i] - fb_qd[i]) + ffdx[i]->Compute(qd_target[i], CURRENT_GAIN * fb_i[i]),
+                              ffdx[i]->Umax,
+                              -1 * ffdx[i]->Umax);
   }
 
   for (int i = 0; i < NUM_MOTORS; i++) {
     Mx[i]->set_duty(cmd_ux[i]);
+  }
+}
+
+void Mobile_command::ramp(float set_target, uint8_t index) {
+  if (set_target != target[index]) {
+    timestamp[index] = millis() + (set_target * 1000.0 / ffdx[index]->qddmax);
+    target[index] = set_target;
+  }
+  if (millis() < timestamp[index]) {
+    if (qd_target[index] > target[index]) qd_target[index] -= ffdx[index]->qddmax * dt;
+    else if (qd_target[index] < target[index]) qd_target[index] += ffdx[index]->qddmax * dt;
+  } else {
+    qd_target[index] = target[index];
   }
 }

@@ -1,3 +1,4 @@
+#include "esp32-hal.h"
 #ifndef MOBILE_COMMAND_H
 #define MOBILE_COMMAND_H
 
@@ -9,6 +10,10 @@
 #include <Controller.h>
 #include <Esp32_Cytron_MDxx.h>
 
+extern float dt;
+
+#define CURRENT_GAIN 18.0 / 26.6
+
 class Mobile_command {
 private:
     static const int NUM_MOTORS = 4; // Number of motors, encoders, and PIDs
@@ -19,6 +24,12 @@ private:
     DC_MOTOR_FFD* ffdx[NUM_MOTORS];
     KalmanFilter* kfx[NUM_MOTORS];
     Kinematics* kinematics;    
+
+    uint32_t timestamp[NUM_MOTORS];
+    float target[NUM_MOTORS];
+    float qd_target[NUM_MOTORS]; 
+
+    void ramp(float set_target, uint8_t index);
 
 public:
 
