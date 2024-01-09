@@ -46,13 +46,13 @@ void Mobile_command::control(float _vx, float _vy, float _wz) {
 
   for (int i = 0; i < NUM_MOTORS; i++) {
     float* kf_ptr = kfx[i]->Compute(fb_q[i],
-                                    cmd_ux[i] * ffdx[i]->Vmax / PWM_STATUATION_VALUE);
+                                    cmd_ux[i] * ffdx[i]->Vmax / ffdx[i]->Umax);
     fb_qd[i] = kf_ptr[1];
     fb_i[i] = kf_ptr[3];
 
     cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(target[i] - fb_qd[i]) + ffdx[i]->Compute(target[i], fb_i[i]),
-                           PWM_STATUATION_VALUE,
-                           -1 * PWM_STATUATION_VALUE);
+                           ffdx[i]->Umax,
+                           -1 * ffdx[i]->Umax);
   }
 
   for (int i = 0; i < NUM_MOTORS; i++) {
