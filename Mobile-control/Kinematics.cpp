@@ -18,16 +18,18 @@ Kinematics::Velocity Kinematics::Forward_Kinematics_Velocity(float radps_fl, flo
 
 Kinematics::RadPS Kinematics::Inverse_Kinematics(float vx, float vy, float wz) {
   RadPS wheel_rads;
-  wheel_rads.radps_fl = (vx + vy + (robot.lx + robot.ly) * wz);
-  wheel_rads.radps_fr = (vx - vy - (robot.lx + robot.ly) * wz);
-  wheel_rads.radps_bl = (vx - vy + (robot.lx + robot.ly) * wz);
-  wheel_rads.radps_br = (vx + vy - (robot.lx + robot.ly) * wz);
+  wheel_rads.radps_fl = (vx + vy + (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
+  wheel_rads.radps_fr = (vx - vy - (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
+  wheel_rads.radps_bl = (vx - vy + (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
+  wheel_rads.radps_br = (vx + vy - (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
+
+
   return wheel_rads;
 }
 
 Kinematics::Position Kinematics::Forward_Kinematics_Position(float radps_fl, float radps_fr, float radps_bl, float radps_br, Position current_position) {
   Velocity basev = Forward_Kinematics_Velocity(radps_fl, radps_fr, radps_bl, radps_br);
-  float dt = 1/1000.0;
+  float dt = 1 / 1000.0;
   current_position.x += basev.vx * dt;
   current_position.y += basev.vy * dt;
   current_position.theta += basev.wz * dt * (180.0 / M_PI);

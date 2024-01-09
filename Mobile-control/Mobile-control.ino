@@ -5,16 +5,32 @@
 #include "Mobile_command.h"
 #include "AS5600.h"
 #include "Wire.h"
-
-AS5600 as5600;  // Assuming AS5600 is compatible with TwoWire
+#include "KalmanFilter.h"
+#include <math.h>
+#include "Cytron_Motor_260rpm_250W.h"
 
 #define I2C_SDA 13
 #define I2C_SCL 14
+
+//Print loop Time (100 Hz)
+unsigned long prev_timestep_print;
+unsigned long current_timestep_print;
+unsigned long timestamp_print = 0;
+int32_t timestep_print = 10000;
+//Control loop Time (1000 Hz)
+unsigned long prev_timestep;
+unsigned long current_timestep;
+unsigned long timestamp = 0;
+int timestep = 1000;
+
+uint32_t timestamp_update = 0;
+
+unsigned long tcur;
 /*-----QEI(encA, encB)------*/
 
-QEI enc1(17, 18);
+QEI enc1(18, 17);
 QEI enc2(33, 34);
-QEI enc3(35, 36);
+QEI enc3(36, 35);
 QEI enc4(37, 38);
 
 long counter0 = 0;
@@ -55,86 +71,118 @@ setMotor MOTOR_4(MOTOR_4_PWM_PIN, MOTOR_4_DIR_PIN, MOTOR_BASE_FREQ, MOTOR_TIMER_
 #define BNO_SDA 15
 #define BNO_SCL 16
 
+/*-----Config Kalman -----*/
+KalmanFilter kf1(CYTRON_MOTOR_260RPM_250W_MatrixA,
+                 CYTRON_MOTOR_260RPM_250W_MatrixB,
+                 CYTRON_MOTOR_260RPM_250W_MatrixC,
+                 CYTRON_MOTOR_260RPM_250W_MatrixQ,
+                 CYTRON_MOTOR_260RPM_250W_MatrixR);
+KalmanFilter kf2(CYTRON_MOTOR_260RPM_250W_MatrixA,
+                 CYTRON_MOTOR_260RPM_250W_MatrixB,
+                 CYTRON_MOTOR_260RPM_250W_MatrixC,
+                 CYTRON_MOTOR_260RPM_250W_MatrixQ,
+                 CYTRON_MOTOR_260RPM_250W_MatrixR);
+KalmanFilter kf3(CYTRON_MOTOR_260RPM_250W_MatrixA,
+                 CYTRON_MOTOR_260RPM_250W_MatrixB,
+                 CYTRON_MOTOR_260RPM_250W_MatrixC,
+                 CYTRON_MOTOR_260RPM_250W_MatrixQ,
+                 CYTRON_MOTOR_260RPM_250W_MatrixR);
+KalmanFilter kf4(CYTRON_MOTOR_260RPM_250W_MatrixA,
+                 CYTRON_MOTOR_260RPM_250W_MatrixB,
+                 CYTRON_MOTOR_260RPM_250W_MatrixC,
+                 CYTRON_MOTOR_260RPM_250W_MatrixQ,
+                 CYTRON_MOTOR_260RPM_250W_MatrixR);
+
+int32_t rawAngle_prev, count;
+
 /*-----Config PID -----*/
-PID pid1(&MOTOR_1, &enc1, 1, 0.0f, 0.0f);
-PID pid2(&MOTOR_2, &enc2, 0.0f, 0.0f, 0.0f);
-PID pid3(&MOTOR_3, &enc3, 0.0f, 0.0f, 0.0f);
-PID pid4(&MOTOR_4, &enc4, 0.0f, 0.0f, 0.0f);
+PID pid1(&MOTOR_1, &enc1, &kf1, 7.5, 7.5, 0.0);
+PID pid2(&MOTOR_2, &enc2, &kf2, 7.5, 7.5, 0.0);
+PID pid3(&MOTOR_3, &enc3, &kf3, 7.5, 7.5, 0.0);
+PID pid4(&MOTOR_4, &enc4, &kf4, 7.5, 7.5, 0.0);
 
 /*-----Config Robot Base-----*/
-#define WHEEL_DIAMETER 0.25  //meter
-#define LX 0.5               //meter
-#define LY 0.5               //meter
+#define WHEEL_DIAMETER 0.1524  //meter
+#define LX 0.2105              //meter
+#define LY 0.31                //meter
 
 Kinematics kinematics(WHEEL_DIAMETER, LX, LY);
 
-
 /*-----Pass value-----*/
-setMotor* motors[4] = { &MOTOR_1, &MOTOR_2, &MOTOR_3, &MOTOR_4 };
-QEI* encoders[4] = { &enc1, &enc2, &enc3, &enc4 };
-PID* pids[4] = { &pid1, &pid2, &pid3, &pid4 };
+setMotor *motors[4] = { &MOTOR_1, &MOTOR_2, &MOTOR_3, &MOTOR_4 };
+QEI *encoders[4] = { &enc1, &enc2, &enc3, &enc4 };
+PID *pids[4] = { &pid1, &pid2, &pid3, &pid4 };
 
 Mobile_command Mobile(motors, encoders, pids, &kinematics);
 
+float counts_per_rev = 2048 * 4.0;
+int32_t pos_prev = 0;
 
+double q = 0;
+double q_prev = 0;
 
+float v_est;
+float u_volt;
+
+float set_point = 0;
+
+struct RadPs {
+  float radps_fl;
+  float radps_fr;
+  float radps_bl;
+  float radps_br;
+};
+struct RadPs wheel_radps;
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(230400);
 
   /*-----Setup Hardware Start-----*/
-
-  MOTOR_1.begin();
-  MOTOR_2.begin();
-  MOTOR_3.begin();
-  MOTOR_4.begin();
-
   enc1.begin();
   enc2.begin();
   enc3.begin();
   enc4.begin();
   Wire.begin(I2C_SDA, I2C_SCL);  // Initialize I2C communication
 
-  as5600.begin();                          // Initialize AS5600 sensor
-  as5600.setDirection(AS5600_CLOCK_WISE);  // Set direction
 
-  // pid1.setK(1, 1, 1);
+  MOTOR_1.begin();
+  MOTOR_2.begin();
+  MOTOR_3.begin();
+  MOTOR_4.begin();
 
-  /*-----Setup Hardware End-------*/
+  kf1.init();
+  kf2.init();
+  kf3.init();
+  kf4.init();
+
+  MOTOR_1.setPWM(0);
+  MOTOR_2.setPWM(0);
+  MOTOR_3.setPWM(0);
+  MOTOR_4.setPWM(0);
+  delay(5000);
+
+  timestamp_update = micros();
 }
 
+//Generate Sinwave
+float dummy_sinwave = 0;
+#define SIMUL_PERIOD 1     // oscillating period [s]
+#define SIMUL_AMP 16383.0  // oscillation amplitude
+
+float *kf1_ptr;
+float *kf2_ptr;
+float *kf3_ptr;
+float *kf4_ptr;
+
+double q1, q2, q3, q4 = 0;
+float qd1, qd2, qd3, qd4;
+float i1, i2, i3, i4;
+
+uint8_t flag = 0;
 void loop() {
-  float v = as5600.getAngularSpeed(AS5600_MODE_RADIANS);
-  Mobile.control(10, 0, 0, v);
-  Serial.println(pid1.u);
-  /*-----Test PWM Start (0 - 16383)-----*/
-  // %duty 0 - 16382
-  // MOTOR_1.setPWM(4096);
-  // MOTOR_2.setPWM(8192);
-  // MOTOR_3.setPWM(12288);
-  // MOTOR_4.setPWM(16383);
-
-  /*-----Test PWM End-------*/
-
-  uint32_t time = micros();
-
-  counter0 += enc1.get_diff_count();
-  counter1 += enc2.get_diff_count();
-  counter2 += enc3.get_diff_count();
-  counter3 += enc4.get_diff_count();
-
-  uint32_t dt = micros() - time;
-
-  // Serial.print(dt);
-  // Serial.print(' ');
-  // Serial.print(counter0);
-  // Serial.print(' ');
-  // Serial.print(counter1);
-  // Serial.print(' ');
-  // Serial.print(counter2);
-  // Serial.print(' ');
-  // Serial.println(counter3);
+  current_timestep = micros();
+  if (current_timestep - timestamp > timestep) {
+    timestamp = micros();
+    Mobile.control(1, 0, 0);
+  }
 }
 
-void test() {
-  Serial.println("Success");
-}
