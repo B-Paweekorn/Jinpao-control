@@ -1,3 +1,5 @@
+#include "Mobile_Config.h"
+#include "Wire.h"
 #include "esp32-hal.h"
 #include "Mobile_command.h"
 
@@ -17,6 +19,8 @@ void Mobile_command::begin() {
     encx[i]->begin();
   }
 
+  // Wire.begin(ADC_SDA, ADC_SCL, 400000);
+  Wire1.begin(BNO_SDA, BNO_SCL, 400000);
   delay(10);
 
   for (int i = 0; i < NUM_MOTORS; i++) {

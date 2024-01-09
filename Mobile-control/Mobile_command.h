@@ -4,19 +4,20 @@
 
 #include <Arduino.h>
 
-#include <QEI.h>
-#include <Kinematics.h>
-#include <KalmanFilter.h>
-#include <Controller.h>
-#include <Esp32_Cytron_MDxx.h>
-
-extern float dt;
+// #include <QEI.h>
+// #include <Kinematics.h>
+// #include <KalmanFilter.h>
+// #include <Controller.h>
+// #include <Esp32_Cytron_MDxx.h>
+#include <Mobile_Config.h>
+#include "Wire.h"
 
 #define CURRENT_GAIN 18.0 / 26.6
 
 class Mobile_command {
 private:
     static const int NUM_MOTORS = 4; // Number of motors, encoders, and PIDs
+    float dt = 1 / 1000.0;
 
     ESP32_CYTRON_MD* Mx[NUM_MOTORS];
     QEI* encx[NUM_MOTORS];

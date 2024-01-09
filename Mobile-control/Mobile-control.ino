@@ -1,7 +1,4 @@
 #include <Mobile_command.h>
-#include <Mobile_Config.h>
-#include "AS5600.h"
-#include "Wire.h"
 #include <math.h>
 
 #define I2C_SDA 13
@@ -25,12 +22,12 @@ int timestep_cmd = 5000000;
 
 float vx, vy, vw = 0;
 
-Mobile_command Mobile(Mx, encx, pidx, ffdx, kfx, &kinematics);
+Mobile_command Mobile(Mx, encx, pidx, ffdx, kfx, kin);
 
 void setup() {
   Serial.begin(115200);
 
-  Wire.begin(I2C_SDA, I2C_SCL);
+  // Wire.begin(I2C_SDA, I2C_SCL);
 
   Mobile.begin();
 }
