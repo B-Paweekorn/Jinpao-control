@@ -1,8 +1,8 @@
 #ifndef __CYTRON_MOTOR_260RPM_250W_H__
 #define __CYTRON_MOTOR_260RPM_250W_H__
 
-#include <stdint.h>
-#include <Controller.h>
+#include "stdint.h"
+#include "Controller.h"
 
 #define CYTRON_MOTOR_260RPM_250W_VElOCITY_KP 7.5
 #define CYTRON_MOTOR_260RPM_250W_VElOCITY_KI 7.5

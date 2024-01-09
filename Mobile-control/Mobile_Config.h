@@ -1,16 +1,13 @@
 #ifndef __MOBILE_CONFIG_H__
 #define __MOBILE_CONFIG_H__
 
-// #include <AS5600.h>
-// #include "Wire.h"
+#include "QEI.h"
+#include "Kinematics.h"
+#include "KalmanFilter.h"
+#include "Controller.h"
+#include "Esp32_Cytron_MDxx.h"
 
-#include <QEI.h>
-#include <Kinematics.h>
-#include <KalmanFilter.h>
-#include <Controller.h>
-#include <Esp32_Cytron_MDxx.h>
-
-#include <Cytron_Motor_260rpm_250W.h>
+#include "Cytron_Motor_260rpm_250W.h"
 
 /*-----Config ADC Start-----*/
 #define ADC_SDA 13

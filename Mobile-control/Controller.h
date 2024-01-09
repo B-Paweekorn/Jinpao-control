@@ -1,7 +1,7 @@
 #ifndef __CONTROLLER_H__
 #define __CONTROLLER_H__
 
-#include <stdint.h>
+#include "stdint.h"
 
 typedef struct {
   float Ke;

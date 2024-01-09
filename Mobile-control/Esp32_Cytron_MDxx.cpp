@@ -1,4 +1,4 @@
-#include <Esp32_Cytron_MDxx.h>
+#include "Esp32_Cytron_MDxx.h"
 
 ESP32_CYTRON_MD ::ESP32_CYTRON_MD(uint8_t _pwm_pin, uint8_t _dir_pin, uint32_t _freq, uint8_t _res)
   : pwm_pin(_pwm_pin), dir_pin(_dir_pin), freq(_freq), resolution(_res) {}

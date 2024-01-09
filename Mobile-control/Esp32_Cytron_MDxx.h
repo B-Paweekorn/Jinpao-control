@@ -1,9 +1,9 @@
 #ifndef _ESP32_CYTRON_MDXX_H__
 #define _ESP32_CYTRON_MDXX_H__
 
-#include <stdint.h>
-#include <Arduino.h>
-#include <esp32-hal-ledc.h>
+#include "stdint.h"
+#include "Arduino.h"
+#include "esp32-hal-ledc.h"
 
 class ESP32_CYTRON_MD {
   private:

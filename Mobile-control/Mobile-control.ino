@@ -1,8 +1,10 @@
-#include <Mobile_command.h>
-#include <math.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
-#define I2C_SDA 13
-#define I2C_SCL 14
+#include "Mobile_command.h"
+#include "math.h"
 
 //Print loop Time (100 Hz)
 unsigned long prev_timestep_print;
@@ -24,10 +26,11 @@ float vx, vy, vw = 0;
 
 Mobile_command Mobile(Mx, encx, pidx, ffdx, kfx, kin);
 
+IMU_DATA imu_data;
+ODOM_DATA odom_data;
+
 void setup() {
   Serial.begin(115200);
-
-  // Wire.begin(I2C_SDA, I2C_SCL);
 
   Mobile.begin();
 }
@@ -37,6 +40,8 @@ void loop() {
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
+
+    imu_data = Mobile.getIMU();
 
     Serial.print(Mobile.fb_qd[0]);
     Serial.print(" ");
@@ -61,5 +66,7 @@ void loop() {
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
     Mobile.control(vx, vy, 0);
+
+    odom_data = Mobile.getODOM();
   }
 }
