@@ -5,6 +5,8 @@
 #include <Arduino.h>
 #include <esp32-hal-ledc.h>
 
+#define PWM_STATUATION_VALUE 16383.0
+
 class ESP32_CYTRON_MD {
   private:
 

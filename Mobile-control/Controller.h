@@ -10,6 +10,7 @@ typedef struct {
   float R;
   float J;
   float B;
+  float V_max;
 } MotorConstant_Structure;
 
 int32_t PWM_Satuation(float _u, int32_t _upper_limit, int32_t _lower_limit);
@@ -40,6 +41,8 @@ class DC_MOTOR_FFD {
   MotorConstant_Structure *Mx;
 
   public:
+
+  float Vmax;
 
   DC_MOTOR_FFD(MotorConstant_Structure *_Mx);
 

@@ -2,8 +2,10 @@
 #include "driver/pulse_cnt.h"
 #include "QEI.h"
 
-QEI ::QEI(int encA, int encB, int limit, uint32_t filt)
-  : encA_pin(encA), encB_pin(encB), pcnt_limit(limit), filter_ns(filt) {}
+QEI ::QEI(int encA, int encB, float ppr, int limit, uint32_t filt)
+  : encA_pin(encA), encB_pin(encB), pcnt_limit(limit), filter_ns(filt) {
+    pulse_per_rev = ppr;
+  }
 
 void QEI ::begin() {
 
