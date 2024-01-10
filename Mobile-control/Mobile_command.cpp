@@ -31,13 +31,16 @@ void Mobile_command::begin() {
     Mx[i]->begin();
     Mx[i]->set_duty(0);
 
-    kfx[i]->begin();
-
     cmd_ux[i] = 0;
     fb_q[i] = 0;
     fb_qd[i] = 0;
     fb_i[i] = 0;
+
+    encx[i]->reset();
+    kfx[i]->begin();
   }
+
+  delay(10);
 }
 
 void Mobile_command::control(float _vx, float _vy, float _wz) {
@@ -107,7 +110,7 @@ ODOM_DATA Mobile_command::getODOM() {
 
 void Mobile_command::ramp(float set_target, uint8_t index) {
   if (set_target != target[index]) {
-    timestamp[index] = millis() + (set_target * 1000.0 / ffdx[index]->qddmax);
+    timestamp[index] = millis() + (abs(set_target - target[index]) * 1000.0 / ffdx[index]->qddmax);
     target[index] = set_target;
   }
   if (millis() < timestamp[index]) {

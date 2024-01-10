@@ -24,6 +24,7 @@ DC_MOTOR_FFD ::DC_MOTOR_FFD(MotorConstant_Structure *_Mx)
   }
 
 float DC_MOTOR_FFD ::Compute(float qd, float i) {
+  // float V = (Mx->Ke * qd);
   float V = (Mx->Ke * qd) + (Mx->R * i);
   return Umax * V / Vmax;
 }

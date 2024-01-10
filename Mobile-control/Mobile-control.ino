@@ -20,7 +20,7 @@ int timestep = 1000;
 unsigned long prev_timestep_cmd;
 unsigned long current_timestep_cmd;
 unsigned long timestamp_cmd = 0;
-int timestep_cmd = 2e6;
+int timestep_cmd = 3e6;
 
 float vx, vy, vw = 0;
 
@@ -34,7 +34,7 @@ void setup() {
   Serial.begin(115200);
 
   Mobile.begin();
-  
+
   delay(5000);
 }
 void loop() {
@@ -45,7 +45,14 @@ void loop() {
     timestamp_print = micros();
 
     imu_data = Mobile.getIMU();
-
+    Serial.print(Mobile.cmd_ux[0]);
+    Serial.print(" ");
+    Serial.print(Mobile.cmd_ux[1]);
+    Serial.print(" ");
+    Serial.print(Mobile.cmd_ux[2]);
+    Serial.print(" ");
+    Serial.print(Mobile.cmd_ux[3]);
+    Serial.print(" ");
     Serial.print(Mobile.fb_qd[0]);
     Serial.print(" ");
     Serial.print(Mobile.fb_qd[1]);
@@ -59,33 +66,38 @@ void loop() {
   current_timestep_cmd = micros();
   if (current_timestep_cmd - timestamp_cmd > timestep_cmd) {
     timestamp_cmd = micros();
-    if(flag == 0){
+    if (flag == 0) {
       flag = 1;
+      vx = 0;
+      vy = 0;
+      vw = 0;
+    } else if (flag == 1) {
+      flag = 2;
       vx = 1;
       vy = 0;
       vw = 0;
-    } else if(flag == 1){
-      flag = 2;
+    } else if (flag == 2) {
+      flag = 3;
       vx = 0;
       vy = 0;
       vw = 0;
-    } else if(flag == 2){
-      flag = 3;
+    } else if (flag == 3) {
+      flag = 4;
       vx = 0;
       vy = 1;
       vw = 0;
-    } else if(flag == 3){
-      flag = 4;
+    } else if (flag == 4) {
+      flag = 5;
       vx = 0;
       vy = 0;
       vw = 0;
-    } else if(flag == 4){
-      flag = 5;
+    } else if (flag == 5) {
+      flag = 6;
       vx = 0;
       vy = 0;
       vw = 1;
-    } else if(flag == 5){
-      flag = 5;
+    } else if (flag == 6) {
+      flag = 6;
       vx = 0;
       vy = 0;
       vw = 0;
