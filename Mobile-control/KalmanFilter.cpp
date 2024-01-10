@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include "stdint.h"
 #include "Arduino.h"
 /*
  * kalmanfilter.cpp
@@ -7,18 +7,7 @@
  *      Author: weera
  */
 
-#include <KalmanFilter.h>
-
-// KalmanFilter::KalmanFilter(float *_A_data, float *_B_data, float *_C_data, float *_Q_data, float *_R_data) {
-
-//   matrix buf1(4, 1);
-//   predictX_old = buf1;
-//   matrix buf2(4, 4);
-//   P_old = buf2;
-//   float buf_val[16] = { 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-//   matrix buf3(4, 4, buf_val);
-//   I33 = buf3;
-// }
+#include "KalmanFilter.h"
 
 KalmanFilter::KalmanFilter(float *_A_data, float *_B_data, float *_C_data, float *_Q_data, float *_R_data) {
 
@@ -47,7 +36,7 @@ KalmanFilter::KalmanFilter(float *_A_data, float *_B_data, float *_C_data, float
   I33 = buf3;
 }
 
-void KalmanFilter::init() {
+void KalmanFilter::begin() {
 
   float P_val[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
   matrix P_init(4, 4, P_val);
@@ -128,38 +117,11 @@ void KalmanFilter::doResult() {
   resultX = predictX;
 }
 
-// float KalmanFilter::EstimateSpeed(double _measureRad, float Vin) {
-
-//   //Update Observer and Command
-//   measureRad = _measureRad;
-//   updated_U[0] = Vin;
-//   updated_Ymeas[0] = measureRad;
-//   U.read(updated_U);
-//   Y.read(updated_Ymeas);
-
-//   //Kalmanfilter
-//   run();
-
-
-
-//   //Estimate Velocity
-//   // estimateVel = resultX.data[1][0];
-
-//   //Estimate State
-//   estimateState[0] = resultX.data[0][0];
-//   estimateState[1] = resultX.data[1][0];
-//   estimateState[2] = resultX.data[2][0];
-//   estimateState[3] = resultX.data[3][0];
-
-//   return estimateState;
-// }
-
-float *KalmanFilter::EstimateSpeed(double _measureRad, float Vin) {
+float *KalmanFilter::Compute(double _q, float _Vin) {
 
   //Update Observer and Command
-  measureRad = _measureRad;
-  updated_U[0] = Vin;
-  updated_Ymeas[0] = measureRad;
+  updated_U[0] = _Vin;
+  updated_Ymeas[0] = _q;
   U.read(updated_U);
   Y.read(updated_Ymeas);
 
