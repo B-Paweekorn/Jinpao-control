@@ -4,26 +4,26 @@
 #include "stdint.h"
 #include "Controller.h"
 
-#define CYTRON_MOTOR_680RPM_680W_VElOCITY_KP 7.5
-#define CYTRON_MOTOR_680RPM_680W_VElOCITY_KI 7.5
-#define CYTRON_MOTOR_680RPM_680W_VElOCITY_KD 0.0
+#define CYTRON_MOTOR_680RPM_250W_VElOCITY_KP 7.5
+#define CYTRON_MOTOR_680RPM_250W_VElOCITY_KI 7.5
+#define CYTRON_MOTOR_680RPM_250W_VElOCITY_KD 0.0
 
 #define AMT103_PPR 2048.0 * 4.0
 
-extern MotorConstant_Structure CYTRON_MOTOR_680RPM_680W_Constant;
+extern MotorConstant_Structure CYTRON_MOTOR_680RPM_250W_Constant;
 
-extern float CYTRON_MOTOR_680RPM_680W_MatrixA[];
+extern float CYTRON_MOTOR_680RPM_250W_MatrixA[];
 
 //input matrix
-extern float CYTRON_MOTOR_680RPM_680W_MatrixB[];
+extern float CYTRON_MOTOR_680RPM_250W_MatrixB[];
 
 // observation matrix
-extern float CYTRON_MOTOR_680RPM_680W_MatrixC[];
+extern float CYTRON_MOTOR_680RPM_250W_MatrixC[];
 
 //process model variance vaule
-extern float CYTRON_MOTOR_680RPM_680W_MatrixQ[];
+extern float CYTRON_MOTOR_680RPM_250W_MatrixQ[];
 
 // measurement covariance matrix
-extern float CYTRON_MOTOR_680RPM_680W_MatrixR[];
+extern float CYTRON_MOTOR_680RPM_250W_MatrixR[];
 
 #endif

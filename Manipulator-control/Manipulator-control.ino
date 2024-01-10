@@ -23,14 +23,14 @@ float vx, vy, vw = 0;
 
 uint8_t flag = 0;
 // Manipulator_command Manipulator(Mx, encx, pidx, ffdx, kfx, kin);
-ESP32_CYTRON_MD Mx(39, 40, 1000, 14);
+
 
 
 
 void setup() {
   Serial.begin(115200);
 
-  Mx.begin();
+
 
   delay(5000);
 }
@@ -92,6 +92,6 @@ void loop() {
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
     //Manipulator.control(vx, vy, vw);
-    Mx.set_duty(16383);
+
   }
 }
