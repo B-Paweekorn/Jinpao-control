@@ -179,10 +179,70 @@ float i1, i2, i3, i4;
 
 uint8_t flag = 0;
 void loop() {
+  Serial.print(flag);
+  Serial.print(" ");
+  Serial.print(pid1.targetRads);
+  Serial.print(" ");
+  Serial.print(pid2.targetRads);
+  Serial.print(" ");
+  Serial.print(pid3.targetRads);
+  Serial.print(" ");
+  Serial.println(pid4.targetRads);
+  // current_timestep_print = micros();
+  // if (current_timestep_print - timestamp_print > timestep_print) {
+  //   Serial.print(pid1.v);
+  //   Serial.print(" ");
+  //   Serial.print(pid2.v);
+  //   Serial.print(" ");
+  //   Serial.print(pid3.v);
+  //   Serial.print(" ");
+  //   Serial.println(pid4.v);
+  // }
+
+  //Control loop
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    Mobile.control(1, 0, 0);
+    if(flag == 0){
+      Mobile.control(1, 0, 0);
+    }
+    else if(flag == 1){
+      Mobile.control(0, 0, 0);
+    }
+    else if(flag == 2){
+      Mobile.control(0, 1, 0);
+    }
+    else if(flag == 3){
+      Mobile.control(0, 0, 0);
+    }
+    else if(flag == 4){
+      Mobile.control(0, 0, 1);
+    }
+    else if(flag == 5){
+      Mobile.control(0, 0, 0);
+    }
+  }
+
+  if (current_timestep - timestamp_update > 2e6) {
+    timestamp_update = micros();
+    if(flag == 0){
+      flag = 1;
+    }
+    else if(flag == 1){
+      flag = 2;
+    }
+    else if(flag == 2){
+      flag = 3;
+    }
+    else if(flag == 3){
+      flag = 4;
+    }
+    else if(flag == 4){
+      flag = 5;
+    }
   }
 }
 
+void test() {
+  Serial.println("Success");
+}

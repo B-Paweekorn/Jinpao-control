@@ -10,20 +10,26 @@ Kinematics::Kinematics(float wheel_diameter, float lx, float ly) {
 
 Kinematics::Velocity Kinematics::Forward_Kinematics_Velocity(float radps_fl, float radps_fr, float radps_bl, float radps_br) {
   Velocity basev;
-  basev.vx = (robot.wheel_diameter / 2) / 4 * (radps_fl + radps_fr + radps_bl + radps_br);
-  basev.vy = (robot.wheel_diameter / 2) / 4 * (-radps_fl + radps_fr + radps_bl - radps_br);
-  basev.wz = (robot.wheel_diameter / 2) / (4 * (robot.lx + robot.ly)) * (radps_fl - radps_fr + radps_bl - radps_br);
+  basev.vx = ((robot.wheel_diameter / 2.0) / 4.0) * (radps_fl + radps_fr + radps_bl + radps_br);
+  basev.vy = ((robot.wheel_diameter / 2.0) / 4.0) * (-radps_fl + radps_fr + radps_bl - radps_br);
+  basev.wz = ((robot.wheel_diameter / 2.0) / (4.0 * (robot.lx + robot.ly))) * (radps_fl - radps_fr + radps_bl - radps_br);
   return basev;
 }
 
 Kinematics::RadPS Kinematics::Inverse_Kinematics(float vx, float vy, float wz) {
   RadPS wheel_rads;
-  wheel_rads.radps_fl = (vx + vy + (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
-  wheel_rads.radps_fr = (vx - vy - (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
-  wheel_rads.radps_bl = (vx - vy + (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
-  wheel_rads.radps_br = (vx + vy - (robot.lx + robot.ly) * wz)/(robot.wheel_diameter / 2.0);
-
-
+  if(vx == 0.0 && vy == 0.0 && wz == 0.0){
+    wheel_rads.radps_fl = 0;
+    wheel_rads.radps_fr = 0;
+    wheel_rads.radps_bl = 0;
+    wheel_rads.radps_br = 0;
+  }
+  else{
+    wheel_rads.radps_fl = (vx + vy + (robot.lx + robot.ly) * wz)/(robot.wheel_diameter * 0.5);
+    wheel_rads.radps_fr = (vx - vy - (robot.lx + robot.ly) * wz)/(robot.wheel_diameter * 0.5);
+    wheel_rads.radps_bl = (vx - vy + (robot.lx + robot.ly) * wz)/(robot.wheel_diameter * 0.5);
+    wheel_rads.radps_br = (vx + vy - (robot.lx + robot.ly) * wz)/(robot.wheel_diameter * 0.5);
+  }
   return wheel_rads;
 }
 
