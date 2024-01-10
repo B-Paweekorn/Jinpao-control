@@ -20,10 +20,11 @@ int timestep = 1000;
 unsigned long prev_timestep_cmd;
 unsigned long current_timestep_cmd;
 unsigned long timestamp_cmd = 0;
-int timestep_cmd = 5000000;
+int timestep_cmd = 2e6;
 
 float vx, vy, vw = 0;
 
+uint8_t flag = 0;
 Mobile_command Mobile(Mx, encx, pidx, ffdx, kfx, kin);
 
 IMU_DATA imu_data;
@@ -33,6 +34,8 @@ void setup() {
   Serial.begin(115200);
 
   Mobile.begin();
+  
+  delay(5000);
 }
 void loop() {
 
@@ -56,16 +59,44 @@ void loop() {
   current_timestep_cmd = micros();
   if (current_timestep_cmd - timestamp_cmd > timestep_cmd) {
     timestamp_cmd = micros();
-    vx = abs(vx - 1);
-    vy = 0;
-    vw = 0;
+    if(flag == 0){
+      flag = 1;
+      vx = 1;
+      vy = 0;
+      vw = 0;
+    } else if(flag == 1){
+      flag = 2;
+      vx = 0;
+      vy = 0;
+      vw = 0;
+    } else if(flag == 2){
+      flag = 3;
+      vx = 0;
+      vy = 1;
+      vw = 0;
+    } else if(flag == 3){
+      flag = 4;
+      vx = 0;
+      vy = 0;
+      vw = 0;
+    } else if(flag == 4){
+      flag = 5;
+      vx = 0;
+      vy = 0;
+      vw = 1;
+    } else if(flag == 5){
+      flag = 5;
+      vx = 0;
+      vy = 0;
+      vw = 0;
+    }
   }
 
   //Control loop
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    Mobile.control(vx, vy, 0);
+    Mobile.control(vx, vy, vw);
 
     odom_data = Mobile.getODOM();
   }
