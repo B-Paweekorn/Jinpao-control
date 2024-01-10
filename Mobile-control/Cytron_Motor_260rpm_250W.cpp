@@ -9,7 +9,7 @@ MotorConstant_Structure CYTRON_MOTOR_260RPM_250W_Constant = {
   .B = 0.019688440522932,
   .V_max = 18.0,
   .U_max = 16383.0,
-  .qdd_max = 130.0
+  .qdd_max = 13.0
 };
 
 float CYTRON_MOTOR_260RPM_250W_MatrixA[16] = { 1.0, 9.945211490311812E-4, -3.727956981163958E-5, 4.075838177204351E-6,

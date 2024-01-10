@@ -30,12 +30,12 @@
 #define MOTOR_3_DIR_PIN 2
 #define MOTOR_4_DIR_PIN 5
 
-#define ENC_1_A_PIN 17
-#define ENC_1_B_PIN 18
+#define ENC_1_A_PIN 18
+#define ENC_1_B_PIN 17
 #define ENC_2_A_PIN 33
 #define ENC_2_B_PIN 34
-#define ENC_3_A_PIN 35
-#define ENC_3_B_PIN 36
+#define ENC_3_A_PIN 36
+#define ENC_3_B_PIN 35
 #define ENC_4_A_PIN 37
 #define ENC_4_B_PIN 38
 

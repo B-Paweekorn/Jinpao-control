@@ -58,9 +58,13 @@ void Mobile_command::control(float _vx, float _vy, float _wz) {
     fb_qd[i] = kf_ptr[1];
     fb_i[i] = kf_ptr[3];
 
-    cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(qd_target[i] - fb_qd[i]) + ffdx[i]->Compute(qd_target[i], CURRENT_GAIN * fb_i[i]),
-                              ffdx[i]->Umax,
-                              -1 * ffdx[i]->Umax);
+    if (qd_target[i] != 0) {
+      cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(qd_target[i] - fb_qd[i]) + ffdx[i]->Compute(qd_target[i], CURRENT_GAIN * fb_i[i]),
+                                ffdx[i]->Umax,
+                                -1 * ffdx[i]->Umax);
+    } else {
+      cmd_ux[i] = 0;
+    }
   }
 
   for (int i = 0; i < NUM_MOTORS; i++) {
