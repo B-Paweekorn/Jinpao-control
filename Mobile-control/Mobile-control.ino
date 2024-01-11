@@ -74,8 +74,7 @@ void loop() {
       vx = 1;
       vy = 0;
       vw = 0;
-    } 
-    else if (flag == 2) {
+    } else if (flag == 2) {
       flag = 3;
       vx = 0;
       vy = 0;
@@ -85,23 +84,22 @@ void loop() {
       vx = 0;
       vy = 1;
       vw = 0;
+    } else if (flag == 4) {
+      flag = 5;
+      vx = 0;
+      vy = 0;
+      vw = 0;
+    } else if (flag == 5) {
+      flag = 6;
+      vx = 0;
+      vy = 0;
+      vw = 1;
+    } else if (flag == 6) {
+      flag = 6;
+      vx = 0;
+      vy = 0;
+      vw = 0;
     }
-    // } else if (flag == 4) {
-    //   flag = 5;
-    //   vx = 0;
-    //   vy = 0;
-    //   vw = 0;
-    // } else if (flag == 5) {
-    //   flag = 6;
-    //   vx = 0;
-    //   vy = 0;
-    //   vw = 1;
-    // } else if (flag == 6) {
-    //   flag = 6;
-    //   vx = 0;
-    //   vy = 0;
-    //   vw = 0;
-    // }
   }
 
   //Control loop
