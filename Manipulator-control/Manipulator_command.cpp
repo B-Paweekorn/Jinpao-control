@@ -46,12 +46,8 @@ void Manipulator_command::begin() {
 
 void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
 
-
-
   q_target[M_index] = tpx[M_index]->update(targetPosition);
   qd_target[M_index] = tpx[M_index]->getVelocity();
-
-
 
   fb_q[M_index] += encx[M_index]->get_diff_count() * 2 * M_PI / encx[M_index]->pulse_per_rev;
 
@@ -60,7 +56,9 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   // } else {
   //   cmd_vx[M_index] = 0;
   // }
-  cmd_vx[M_index] = PWM_Satuation(pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]), ffdx[M_index]->Vmax, -1 * ffdx[M_index]->Vmax);
+
+  //cmd_vx[M_index] = PWM_Satuation(pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]), ffdx[M_index]->Vmax, -1 * ffdx[M_index]->Vmax);
+  cmd_vx[M_index] = PWM_Satuation(pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
 
   //Velocity Control
 
@@ -75,9 +73,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
     cmd_ux[M_index] = 0;
   }
 
-
-
-  Mx[M_index]->set_duty(cmd_ux[M_index]); //cmd_vx[M_index]
+  Mx[M_index]->set_duty(cmd_vx[M_index]); //cmd_ux[M_index]
 }
 
 void Manipulator_command::tune(uint8_t M_index, float target ){
@@ -95,12 +91,10 @@ void Manipulator_command::tune(uint8_t M_index, float target ){
   fb_i[M_index] = kf_ptr[3];
 
   if (qd_target[M_index] != 0) {
-    cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index]  - fb_qd[M_index]) + ffdx[M_index]->Compute(qd_target[M_index], CURRENT_GAIN * fb_i[M_index]) , ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);//
+    cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index]  - fb_qd[M_index]) , ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);//+ ffdx[M_index]->Compute(qd_target[M_index], CURRENT_GAIN * fb_i[M_index])
   } else {
     cmd_ux[M_index] = 0;
   }
-
-
 
   Mx[M_index]->set_duty(cmd_ux[M_index]); //cmd_ux[M_index]
 }

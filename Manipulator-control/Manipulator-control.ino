@@ -39,16 +39,16 @@ void setup() {
   delay(5000);
 }
 void loop() {
-  //signal = Signal_Generator(2, 11.8, 500);  //Sine Wave
+  signal = Signal_Generator(2, 12, 5000);  //wave form, Amplitude, period (ms)
 
-  if (Serial.available() > 0) {
-    // read the incoming byte:
-    String serialInput = Serial.readString();
-    newVt = serialInput.toDouble();
-    // say what you got:
-    Serial.print("I received: ");
-    Serial.println(serialInput);
-  }
+  // if (Serial.available() > 0) {
+  //   // read the incoming byte:
+  //   String serialInput = Serial.readString();
+  //   newVt = serialInput.toDouble();
+  //   // say what you got:
+  //   Serial.print("I received: ");
+  //   Serial.println(serialInput);
+  // }
 
   //Print loop
   current_timestep_print = micros();
@@ -56,14 +56,13 @@ void loop() {
     timestamp_print = micros();
     // Serial.print(signal);
     // Serial.print(" ");
-    Serial.print(Manipulator.fb_q[0]);
-    Serial.print(" ");
-    Serial.print(Manipulator.q_target[0]);
-    Serial.print(" ");
+    // Serial.print(Manipulator.fb_q[0]);
+    // Serial.print(" ");
+    // Serial.print(Manipulator.q_target[0]);
+    // Serial.print(" ");
     Serial.print(Manipulator.fb_qd[0]);
     Serial.print(" ");
     Serial.println(Manipulator.qd_target[0]);
-    // Serial.print((Manipulator.fb_q[0] - q_prev) * 100);
     // Serial.print(" ");
     // Serial.println(Manipulator.fb_qd[0]);
     q_prev = Manipulator.fb_q[0];
@@ -115,9 +114,9 @@ void loop() {
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    //Manipulator.tune(0, signal);
+    Manipulator.tune(0, signal);
     //Manipulator.tune(1, );
-    Manipulator.setGoal(0, newVt);
+    //Manipulator.setGoal(0, newVt);
   }
 
 
