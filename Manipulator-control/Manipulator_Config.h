@@ -40,9 +40,9 @@
 #define ENC_H_A_PIN 37
 #define ENC_H_B_PIN 38
 
-#define ENC_1_PPR 2048.0 * 4.0
-#define ENC_2_PPR 2048.0 * 4.0
-#define ENC_3_PPR 2048.0 * 4.0
+#define ENC_1_PPR 64.0 * 12.0 * 4.0
+#define ENC_2_PPR 64.0 * 12.0 * 4.0
+#define ENC_3_PPR 64.0 * 12.0 * 4.0
 #define ENC_H_PPR 2048.0 * 4.0
 /*-----Config Motor End-----*/
 
@@ -60,7 +60,8 @@
 
 extern ESP32_CYTRON_MD* Mx[];
 extern QEI* encx[];
-extern PID_CONTROLLER* pidx[];
+extern PID_CONTROLLER* pidx_pos[];
+extern PID_CONTROLLER* pidx_vel[];
 extern DC_MOTOR_FFD* ffdx[];
 extern KalmanFilter* kfx[];
 extern MotionGenerator* tpx[];

@@ -1,7 +1,8 @@
 
 #include "math.h"
-
+#include "Manipulator_command.h"
 #include "Esp32_Cytron_MDxx.h"
+#include "SignalGenerator.h"
 
 //Print loop Time (100 Hz)
 unsigned long prev_timestep_print;
@@ -22,27 +23,50 @@ int timestep_cmd = 3e6;
 float vx, vy, vw = 0;
 
 uint8_t flag = 0;
-// Manipulator_command Manipulator(Mx, encx, pidx, ffdx, kfx, kin);
+Manipulator_command Manipulator(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx);
 
+float signal = 0;
+float q_prev = 0;
 
+double newVt;
 
 
 void setup() {
   Serial.begin(115200);
-
+  Manipulator.begin();
 
 
   delay(5000);
 }
 void loop() {
+  //signal = Signal_Generator(2, 11.8, 500);  //Sine Wave
+
+  if (Serial.available() > 0) {
+    // read the incoming byte:
+    String serialInput = Serial.readString();
+    newVt = serialInput.toDouble();
+    // say what you got:
+    Serial.print("I received: ");
+    Serial.println(serialInput);
+  }
 
   //Print loop
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
-
-
-
+    // Serial.print(signal);
+    // Serial.print(" ");
+    Serial.print(Manipulator.fb_q[0]);
+    Serial.print(" ");
+    Serial.print(Manipulator.q_target[0]);
+    Serial.print(" ");
+    Serial.print(Manipulator.fb_qd[0]);
+    Serial.print(" ");
+    Serial.println(Manipulator.qd_target[0]);
+    // Serial.print((Manipulator.fb_q[0] - q_prev) * 100);
+    // Serial.print(" ");
+    // Serial.println(Manipulator.fb_qd[0]);
+    q_prev = Manipulator.fb_q[0];
   }
 
   //Cmd loop
@@ -91,7 +115,17 @@ void loop() {
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    //Manipulator.control(vx, vy, vw);
-
+    //Manipulator.tune(0, signal);
+    //Manipulator.tune(1, );
+    Manipulator.setGoal(0, newVt);
   }
+
+
+  //Signal generator loop
+  // current_timestep = micros();
+  // if (current_timestep - timestamp > timestep) {
+  //   timestamp = micros();
+  // signal = ???
+
+  // }
 }
