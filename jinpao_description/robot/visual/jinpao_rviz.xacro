@@ -9,10 +9,6 @@
         <!-- Add base -->
         <xacro:include filename="${visual_path}/base.xacro"/>
         <xacro:base_graphics package="${package}" mesh_path="${BASE_MESH_PATH}"/>
-        
-        <!-- Add wheels -->
-        <xacro:include filename="${visual_path}/wheel.xacro"/>
-        <xacro:wheel_set_graphics/>
 
         <!-- Add castor -->
         <xacro:include filename="${visual_path}/castor.xacro"/>

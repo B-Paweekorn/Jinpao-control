@@ -26,19 +26,5 @@
   <xacro:property name="CASTOR_SEPARATION_X" value="${mp['castor_separation_x']}"/>
   <xacro:property name="CASTOR_SEPARATION_Y" value="${mp['castor_separation_y']}"/>
   <xacro:property name="CASTOR_COLOR" value="${mp['castor_color']}"/> 
-  
-  <!-- Pole Contact Properties-->
-  <xacro:property name="POLE_RADIUS" value="${mp['pole_radius']}"/>
-  <xacro:property name="POLE_HEIGHT" value="${mp['pole_height']}"/>
-  <xacro:property name="POLE_SEPARATION_X" value="${mp['pole_separation_x']}"/>
-  <xacro:property name="POLE_SEPARATION_Y" value="${mp['pole_separation_y']}"/>
 
-  <!-- LIDAR Visual Properties -->
-  <xacro:property name="LIDAR_RADIUS" value="${mp['lidar_radius']}"/>
-  <xacro:property name="LIDAR_THICKNESS" value="${mp['lidar_thickness']}"/>
-  <xacro:property name="LIDAR_OFFSET" value="${mp['lidar_offset']}"/>
-  
-  <!-- CAMERA Visual Properties -->
-  <xacro:property name="CAMERA_OFFSET" value="${mp['camera_offset']}"/>
-  <xacro:property name="CAMERA_HEIGHT" value="${mp['camera_height']}"/>
 </robot>

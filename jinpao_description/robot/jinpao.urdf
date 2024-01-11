@@ -58,37 +58,6 @@
     <axis xyz="0.0 0.0 1.0"/>
     <joint_properties damping="1.0" friction="1.0"/>
   </joint>
-  <link name="lidar_link">
-    <visual>
-      <geometry>
-        <cylinder length="0.04" radius="0.035"/>
-      </geometry>
-    </visual>
-  </link>
-  <joint name="lidar_mount" type="fixed">
-    <origin xyz="0.22 0.0 0.145"/>
-    <parent link="base_link"/>
-    <child link="lidar_link"/>
-  </joint>
-  <link name="camera_link">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <box size="0.025 0.09 0.025"/>
-      </geometry>
-    </visual>
-  </link>
-  <link name="camera_optical"/>
-  <joint name="camera_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="camera_link"/>
-    <origin xyz="0.317 0 0.1"/>
-  </joint>
-  <joint name="camera_optical_mount" type="fixed">
-    <parent link="camera_link"/>
-    <child link="camera_optical"/>
-    <origin rpy="-1.5707963267948966 0 -1.5707963267948966" xyz="0 0 0"/>
-  </joint>
   <link name="imu_link"/>
   <joint name="imu_mount" type="fixed">
     <parent link="base_link"/>

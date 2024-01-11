@@ -22,7 +22,7 @@ def generate_launch_description():
     robot_path_description = os.path.join(get_package_share_directory(
                                     'jinpao_description'), 
                                     'robot',
-                                    'carver.xacro')
+                                    'jinpao.xacro')
 
     robot_description = xacro.process_file(robot_path_description).toxml()
     
