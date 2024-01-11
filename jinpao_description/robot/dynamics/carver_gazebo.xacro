@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="jinpao">
+    <xacro:macro name="jinpao_gazebo" params="package">
+        <xacro:property name="visual_path" value="$(find ${package})/robot/visual"/>
+        <xacro:property name="dynamics_path" value="$(find ${package})/robot/dynamics"/>
+        
+        <!-- Include all model properties-->
+        <xacro:include filename="${visual_path}/properties.xacro"/>
+        <xacro:include filename="${dynamics_path}/properties.xacro"/>
+        
+        <!-- Add base -->
+        <xacro:include filename="${visual_path}/base.xacro"/>
+        <xacro:include filename="${dynamics_path}/base.xacro"/>
+        <xacro:base package="${package}" mesh_path="${BASE_MESH_PATH}"/>
+        
+        <!-- Add wheels -->
+        <xacro:include filename="${visual_path}/wheel.xacro"/>
+        <xacro:include filename="${dynamics_path}/wheel.xacro"/>
+        <xacro:wheel_set/>
+        
+        <!-- Add castors -->
+        <xacro:include filename="${visual_path}/castor.xacro"/>
+        <xacro:include filename="${dynamics_path}/castor.xacro"/>
+        <xacro:castor_set/>
+
+        <!-- Add poles -->
+        <xacro:include filename="${dynamics_path}/pole.xacro"/>
+        <xacro:pole_set/>
+        
+        <!-- Add sensor link -->
+        <xacro:include filename="${visual_path}/sensor.xacro"/>
+        <xacro:sensor_link/>
+        
+    </xacro:macro>
+</robot>

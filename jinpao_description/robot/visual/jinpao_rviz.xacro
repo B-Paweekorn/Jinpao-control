@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="jinpao">
+    <xacro:macro name="jinpao_rviz" params="package">
+        <xacro:property name="visual_path" value="$(find ${package})/robot/visual"/>
+        
+        <!-- Include all model properties-->
+        <xacro:include filename="${visual_path}/properties.xacro"/>
+        
+        <!-- Add base -->
+        <xacro:include filename="${visual_path}/base.xacro"/>
+        <xacro:base_graphics package="${package}" mesh_path="${BASE_MESH_PATH}"/>
+        
+        <!-- Add wheels -->
+        <xacro:include filename="${visual_path}/wheel.xacro"/>
+        <xacro:wheel_set_graphics/>
+
+        <!-- Add castor -->
+        <xacro:include filename="${visual_path}/castor.xacro"/>
+        <xacro:castor_set_graphics/>
+        
+        <!-- Add sensor link -->
+        <xacro:include filename="${visual_path}/sensor.xacro"/>
+        <xacro:sensor_link/>
+    </xacro:macro>
+</robot>

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="jinpao">
+    
+    <xacro:macro name="wheel" params="name translation_y">
+        <link name="${name}_wheel">
+            <xacro:wheel_visual name="${name}"/> 
+            <inertial>
+                <origin xyz="${WHEEL_COM}"/>
+                <mass value="${WHEEL_M}"/>
+                <inertia 
+                  ixx="${WHEEL_Ixx}"
+                  ixy="${WHEEL_Ixy}"
+                  ixz="${WHEEL_Ixz}"
+                  iyy="${WHEEL_Iyy}"
+                  iyz="${WHEEL_Iyz}"
+                  izz="${WHEEL_Izz}" 
+                />
+            </inertial>
+            <collision>
+                <geometry>
+                    <cylinder radius="${WHEEL_RADIUS}" length="${WHEEL_THICKNESS}"/>
+                </geometry>
+                <surface>
+                    <friction>
+                        <ode>
+                            <mu>1000</mu>
+                            <mu2>1000</mu2>
+                        </ode>
+                    </friction>
+                </surface>
+            </collision>
+        </link>
+        <xacro:wheel_joint name="${name}" translation_y="${translation_y}"/>
+    </xacro:macro>
+
+    <xacro:macro name="wheel_set" params="">
+        <xacro:wheel name="left" translation_y="${WHEEL_SEPARATION/2}"/>
+        <xacro:wheel name="right" translation_y="${-WHEEL_SEPARATION/2}"/>
+    </xacro:macro>
+</robot>
