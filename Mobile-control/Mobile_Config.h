@@ -49,6 +49,7 @@
 #define WHEEL_DIAMETER 0.1524  // [m]
 #define LX 0.2105              // [m]
 #define LY 0.31                // [m]
+#define LZ 0.306               // [m]
 /*-----Config Robot Base End-----*/
 
 /*-----Config Kalman Start-----*/

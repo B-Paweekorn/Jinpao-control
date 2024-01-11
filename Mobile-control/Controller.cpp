@@ -10,7 +10,7 @@ PID_CONTROLLER ::PID_CONTROLLER(float _Kp, float _Ki, float _Kd)
   : Kp(_Kp), Ki(_Ki), Kd(_Kd) {}
 
 float PID_CONTROLLER ::Compute(float ek) {
-  u += ((Kp + Ki + Kd) * ek) + ((Kp + (2 * Kd)) * ek_1) + (Kd * ek_2);
+  u += ((Kp + Ki + Kd) * ek) - ((Kp + (2 * Kd)) * ek_1) + (Kd * ek_2);
   ek_2 = ek_1;
   ek_1 = ek;
   return u;
