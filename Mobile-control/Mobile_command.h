@@ -1,5 +1,3 @@
-
-
 #include "esp32-hal.h"
 #ifndef MOBILE_COMMAND_H
 #define MOBILE_COMMAND_H
@@ -36,41 +34,41 @@ typedef struct {
 
 class Mobile_command {
 private:
-    static const int NUM_MOTORS = 4; // Number of motors, encoders, and PIDs
-    float dt = 1 / 1000.0;
+  static const int NUM_MOTORS = 4;  // Number of motors, encoders, and PIDs
+  float dt = 1 / 1000.0;
 
-    Adafruit_BNO055 bno = Adafruit_BNO055(-1, 0x28, &Wire1);
+  Adafruit_BNO055 bno = Adafruit_BNO055(-1, 0x28, &Wire1);
 
-    ESP32_CYTRON_MD* Mx[NUM_MOTORS];
-    QEI* encx[NUM_MOTORS];
-    PID_CONTROLLER* pidx[NUM_MOTORS];
-    DC_MOTOR_FFD* ffdx[NUM_MOTORS];
-    KalmanFilter* kfx[NUM_MOTORS];
-    Kinematics* kinematics;    
+  ESP32_CYTRON_MD* Mx[NUM_MOTORS];
+  QEI* encx[NUM_MOTORS];
+  PID_CONTROLLER* pidx[NUM_MOTORS];
+  DC_MOTOR_FFD* ffdx[NUM_MOTORS];
+  KalmanFilter* kfx[NUM_MOTORS];
+  Kinematics* kinematics;
 
-    uint32_t timestamp[NUM_MOTORS];
-    float target[NUM_MOTORS];
-    float qd_target[NUM_MOTORS]; 
+  uint32_t timestamp[NUM_MOTORS];
+  float target[NUM_MOTORS];
 
-    void ramp(float set_target, uint8_t index);
+  void ramp(float set_target, uint8_t index);
 
 public:
 
-    int16_t cmd_ux[NUM_MOTORS];
-    double fb_q[NUM_MOTORS];
-    float fb_qd[NUM_MOTORS];
-    float fb_i[NUM_MOTORS];
+  float qd_target[NUM_MOTORS];
 
-    Mobile_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], PID_CONTROLLER* _pidx[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], Kinematics* _kinematics);
+  int16_t cmd_ux[NUM_MOTORS];
+  double fb_q[NUM_MOTORS];
+  float fb_qd[NUM_MOTORS];
+  float fb_i[NUM_MOTORS];
 
-    void begin();
+  Mobile_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], PID_CONTROLLER* _pidx[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], Kinematics* _kinematics);
 
-    void control(float _vx, float _vy, float _wz);
+  void begin();
 
-    IMU_DATA getIMU();
+  void control(float _vx, float _vy, float _wz);
 
-    ODOM_DATA getODOM();
+  IMU_DATA getIMU();
 
+  ODOM_DATA getODOM();
 };
 
 #endif
