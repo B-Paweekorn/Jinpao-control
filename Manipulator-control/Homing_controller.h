@@ -33,7 +33,7 @@
  *
  * -- Attach complete callback function (may run on interrupt, use with care):
  *    hc.attachCompleteCallback([](){ Mx.encoder_reset(); });
- * 
+ *
  * -- Attach fail callback function:
  *    hc.attachFailCallback([](int8_t status){ Serial.print("Homing failed: "); Serial.println(status); });
  *
@@ -57,11 +57,13 @@
 /* ########## START OF HEADER CONTENT ########## */
 #include "Arduino.h"
 #include <functional>
+#include <Adafruit_MCP23X17.h>
 
 class Homing_controller
 {
 public:
     Homing_controller(int8_t homing_pin, bool homing_polarity, uint32_t timeout, float homing_speed);
+    Homing_controller(Adafruit_MCP23X17 &mcp, int8_t homing_pin, bool homing_polarity, uint32_t timeout, float homing_speed);
     void setBrakePin(int8_t brake_pin, bool brake_polarity);
     void setTripCurrent(float current);
     void home();
@@ -74,14 +76,16 @@ public:
 private:
     uint32_t timeout_counter; // is set to when timeout is reached
     volatile int status;      // 0: idle, 1: homing, 2: homing done, -1: timeout error, -2: current error
+    bool mcp_flag;            // 0: not used, 1: used
 
-    int8_t homing_pin;    // arduino pin number
-    bool homing_polarity; // 0: Home on low, 1: Home on high
-    uint32_t timeout;     // in milliseconds, set to 0 for no timeout
-    float homing_speed;   // duty cycle or speed
-    int8_t brake_pin;     // arduino pin number, set to -1 if not used
-    bool brake_polarity;  // 0: Unlock low, 1: Unlock high
-    float trip_current;   // in Ampere, set to 0 for no current sensing
+    int8_t homing_pin;     // arduino pin number
+    bool homing_polarity;  // 0: Home on low, 1: Home on high
+    uint32_t timeout;      // in milliseconds, set to 0 for no timeout
+    float homing_speed;    // duty cycle or speed
+    int8_t brake_pin;      // arduino pin number, set to -1 if not used
+    bool brake_polarity;   // 0: Unlock low, 1: Unlock high
+    float trip_current;    // in Ampere, set to 0 for no current sensing
+    Adafruit_MCP23X17 *mcp; // MCP23S17 object
 
     void stop_motor();
     void completeCallback();

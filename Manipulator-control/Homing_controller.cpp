@@ -34,6 +34,33 @@ Homing_controller::Homing_controller(int8_t homing_pin, bool homing_polarity, ui
 }
 
 /**
+ * @brief Constructs a new Homing Controller object using MCP23017
+ *
+ * @param mcp The MCP23017 object
+ * @param homing_pin The pin number where the homing sensor is connected
+ * @param homing_polarity The state when the sensor is tripped
+ * @param timeout The timeout for the homing controller in milliseconds, set to 0 for no timeout
+ * @param homing_speed The speed of homing, can be duty cycle or speed depending on the mode
+ */
+Homing_controller::Homing_controller(Adafruit_MCP23X17 &mcp, int8_t homing_pin, bool homing_polarity, uint32_t timeout, float homing_speed)
+{
+    this->timeout_counter = 0;
+    this->status = 0;
+
+    this->homing_pin = homing_pin;
+    this->homing_polarity = homing_polarity;
+    this->timeout = timeout;
+    this->homing_speed = homing_speed;
+    this->brake_pin = -1;
+    this->brake_polarity = 0;
+    this->trip_current = 0;
+    this->mcp_flag = true;
+    this->mcp = &mcp;
+
+    (*this->mcp).pinMode(homing_pin, INPUT_PULLUP);
+}
+
+/**
  * @brief Sets the brake pin
  * @note  Do not run this more than once
  *
@@ -44,7 +71,18 @@ void Homing_controller::setBrakePin(int8_t brake_pin, bool brake_polarity)
 {
     this->brake_pin = brake_pin;
     this->brake_polarity = brake_polarity;
+
     pinMode(brake_pin, OUTPUT);
+
+    // NOTE: brake pin is a GPIO so it is not necessary to use MCP23017
+    // if (this->mcp_flag)
+    // {
+    //     (*this->mcp).pinMode(brake_pin, OUTPUT);
+    // }
+    // else
+    // {
+    //     pinMode(brake_pin, OUTPUT);
+    // }
 }
 
 /**
@@ -64,7 +102,17 @@ void Homing_controller::setTripCurrent(float current)
 void Homing_controller::home()
 {
     // check on entry if the motor is already at home
-    if (digitalRead(this->homing_pin) == this->homing_polarity)
+    bool pin_state = false;
+    if (this->mcp_flag)
+    {
+        pin_state = (*this->mcp).digitalRead(this->homing_pin);
+    }
+    else
+    {
+        pin_state = digitalRead(this->homing_pin);
+    }
+
+    if (pin_state == this->homing_polarity)
     {
         this->status = 2;
 
@@ -81,7 +129,14 @@ void Homing_controller::home()
     // if brake pin is set, release the brake
     if (this->brake_pin != -1)
     {
-        digitalWrite(this->brake_pin, this->brake_polarity);
+        if (this->mcp_flag)
+        {
+            (*this->mcp).digitalWrite(this->brake_pin, this->brake_polarity);
+        }
+        else
+        {
+            digitalWrite(this->brake_pin, this->brake_polarity);
+        }
     }
 
     // start the motor
@@ -109,7 +164,17 @@ int8_t Homing_controller::poll_for_status(float current)
     if (this->status == 1)
     {
         // check if the homing process is done by polling (in case the interrupt is missed)
-        if (digitalRead(this->homing_pin) == this->homing_polarity)
+        bool pin_state = false;
+        if (this->mcp_flag)
+        {
+            pin_state = (*this->mcp).digitalRead(this->homing_pin);
+        }
+        else
+        {
+            pin_state = digitalRead(this->homing_pin);
+        }
+
+        if (pin_state == this->homing_polarity)
         {
             this->status = 2;
 
@@ -197,9 +262,16 @@ void Homing_controller::stop_motor()
 {
     if (this->brake_pin != -1)
     {
-        digitalWrite(this->brake_pin, !this->brake_polarity);
+        if (this->mcp_flag)
+        {
+            (*this->mcp).digitalWrite(this->brake_pin, !this->brake_polarity);
+        }
+        else
+        {
+            digitalWrite(this->brake_pin, !this->brake_polarity);
+        }
     }
-    
+
     if (this->fn_motor)
     {
         this->fn_motor(0);
