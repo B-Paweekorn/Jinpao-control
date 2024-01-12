@@ -27,6 +27,8 @@ void Manipulator_command::begin() {
     Serial.println("MCP Error.");
     delay(1000);
     ESP.restart();
+  } else {
+    Serial.println("MCP Init OK");
   }
 
   // Wire1.begin(BNO_SDA, BNO_SCL, 400000);

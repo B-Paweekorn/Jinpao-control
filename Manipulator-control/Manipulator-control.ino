@@ -28,7 +28,7 @@ int timestep_signal = 611;
 float vx, vy, vw = 0;
 
 uint8_t flag = 0;
-Manipulator_command Manipulator(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx, hcx, mcp);.
+Manipulator_command Manipulator(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx, hcx, mcp);
 
 float signal = 0;
 float q_prev = 0;
@@ -46,12 +46,18 @@ void setup() {
   // }
 
   Manipulator.begin();
-  Serial.println("Start0");
-  delay(5000);
-  Manipulator.setHomeAll();
-  Serial.println("Start1");
 }
 void loop() {
+  // Read serial input
+  if (Serial.available())
+  {
+      char input = Serial.read();
+      if (input == 'k')
+      {
+          Manipulator.setHomeAll();
+      }
+  }
+
   // signal = Signal_Generator(2, 12, 5000);  //wave form, Amplitude, period (ms)
 
   // if (Serial.available() > 0) {

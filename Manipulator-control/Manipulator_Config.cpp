@@ -3,8 +3,6 @@
 
 Adafruit_MCP23X17 mcp;
 
-
-
 Homing_controller hc1(mcp,MOTOR_1_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
 Homing_controller hc2(mcp,MOTOR_2_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
 Homing_controller hc3(mcp,MOTOR_3_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);

@@ -27,9 +27,9 @@
 /*-----Config MCP End-----*/
 
 /*-----Config Homing Start-----*/
-#define TIMEOUT_MOTOR_X 10000  //MS
+#define TIMEOUT_MOTOR_X 3000  //MS
 #define SPEED_MOTOR_X -5000    //PWM
-#define TIMEOUT_MOTOR_H 10000  //MS
+#define TIMEOUT_MOTOR_H 5000  //MS
 #define SPEED_MOTOR_H -5000    //PWM
 #define MOTOR_X_CURRENT_LIMIT 0
 #define MOTOR_H_CURRENT_LIMIT 0

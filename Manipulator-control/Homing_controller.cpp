@@ -161,7 +161,7 @@ void Homing_controller::home()
  */
 int8_t Homing_controller::poll_for_status(float current)
 {
-  Serial.println(digitalRead(this->homing_pin));
+  // Serial.println(digitalRead(this->homing_pin));
 
     if (this->status == 1)
     {
@@ -288,6 +288,9 @@ void Homing_controller::completeCallback()
 {
     if (this->complete_callback)
         this->complete_callback();
+
+    Serial.print(this->homing_pin);
+    Serial.println(" completed homing");
 }
 
 /**
@@ -298,4 +301,7 @@ void Homing_controller::failCallback(int8_t status)
 {
     if (this->fail_callback)
         this->fail_callback(status);
+
+    Serial.print(this->homing_pin);
+    Serial.println(" failed homing");
 }
