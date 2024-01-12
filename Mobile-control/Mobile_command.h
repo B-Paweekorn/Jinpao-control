@@ -11,7 +11,7 @@
 #include "Mobile_Config.h"
 #include "Wire.h"
 
-#define CURRENT_GAIN 18.0 / 26.6
+#define CURRENT_GAIN 1 //18.0 / 26.6
 
 typedef struct {
   float x;
