@@ -32,10 +32,13 @@ ODOM_DATA odom_data;
 
 void setup() {
   Serial.begin(115200);
+  neopixelWrite(21, 0, 10, 0);
 
   Mobile.begin();
+  neopixelWrite(21, 0, 0, 10);
 
   delay(5000);
+  neopixelWrite(21, 10, 0, 0);
 }
 void loop() {
 
@@ -45,12 +48,20 @@ void loop() {
     timestamp_print = micros();
 
     imu_data = Mobile.getIMU();
-    Serial.print(odom_data.vx);
-    Serial.print(" ");
-    Serial.print(odom_data.vy);
-    Serial.print(" ");
-    Serial.print(odom_data.wz);
-    Serial.print(" ");
+
+    // Serial.print(imu_data.accel.x);
+    // Serial.print(" ");
+    // Serial.print(imu_data.accel.y);
+    // Serial.print(" ");
+    // Serial.println(imu_data.accel.z);
+    // Serial.println(" ");
+
+    // Serial.print(odom_data.vx);
+    // Serial.print(" ");
+    // Serial.print(odom_data.vy);
+    // Serial.print(" ");
+    // Serial.print(odom_data.wz);
+    // Serial.print(" ");
     Serial.print(Mobile.fb_qd[0]);
     Serial.print(" ");
     Serial.print(Mobile.fb_qd[1]);

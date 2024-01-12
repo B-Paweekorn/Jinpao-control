@@ -22,7 +22,7 @@ void Mobile_command::begin() {
   // Wire.begin(ADC_SDA, ADC_SCL, 400000);
 
   Wire1.begin(BNO_SDA, BNO_SCL, 400000);
-  while (!bno.begin()) vTaskDelay(10 / portTICK_PERIOD_MS);
+  while (!bno.begin()) delay(10);
   bno.setExtCrystalUse(true);
 
   delay(10);
