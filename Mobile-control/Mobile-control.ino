@@ -33,9 +33,12 @@ ODOM_DATA odom_data;
 void setup() {
   Serial.begin(115200);
 
+  neopixelWrite(21, 0, 10, 0);
+
   Mobile.begin();
 
   delay(5000);
+  neopixelWrite(21, 10, 0, 0);
 }
 void loop() {
 
