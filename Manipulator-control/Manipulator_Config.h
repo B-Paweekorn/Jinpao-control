@@ -9,6 +9,31 @@
 #include "Cytron_Motor_680rpm_250W.h"
 #include "Faulhaber_2342l012cr.h"
 #include "MotionGenerator.h"
+#include <Adafruit_MCP23X17.h>
+#include "Homing_controller.h"
+
+
+/*-----Config MCP Start-----*/
+#define MCP_SDA 15
+#define MCP_SCL 16
+
+#define MOTOR_1_HOME_PIN 8
+#define MOTOR_2_HOME_PIN 9
+#define MOTOR_3_HOME_PIN 10
+#define MOTOR_H_HOME_PIN 12
+
+#define MOTOR_H_BRAKE_PIN 10  //GPIO
+
+/*-----Config MCP End-----*/
+
+/*-----Config Homing Start-----*/
+#define TIMEOUT_MOTOR_X 10000  //MS
+#define SPEED_MOTOR_X -5000    //PWM
+#define TIMEOUT_MOTOR_H 10000  //MS
+#define SPEED_MOTOR_H -5000    //PWM
+#define MOTOR_X_CURRENT_LIMIT 0
+#define MOTOR_H_CURRENT_LIMIT 0
+/*-----Config Homing End-----*/
 
 /*-----Config ADC Start-----*/
 #define ADC_SDA 13
@@ -65,6 +90,7 @@ extern PID_CONTROLLER* pidx_vel[];
 extern DC_MOTOR_FFD* ffdx[];
 extern KalmanFilter* kfx[];
 extern MotionGenerator* tpx[];
-
+extern Homing_controller* hcx[];
+extern Adafruit_MCP23X17 mcp;
 
 #endif

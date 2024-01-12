@@ -161,6 +161,8 @@ void Homing_controller::home()
  */
 int8_t Homing_controller::poll_for_status(float current)
 {
+  Serial.println(digitalRead(this->homing_pin));
+
     if (this->status == 1)
     {
         // check if the homing process is done by polling (in case the interrupt is missed)
