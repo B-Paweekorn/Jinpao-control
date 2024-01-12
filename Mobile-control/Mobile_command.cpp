@@ -19,13 +19,7 @@ void Mobile_command::begin() {
     encx[i]->begin();
   }
 
-  // Wire.begin(ADC_SDA, ADC_SCL, 400000);
-
-  Wire1.begin(BNO_SDA, BNO_SCL, 400000);
-  while (!bno.begin()) delay(10);
-  bno.setExtCrystalUse(true);
-
-  delay(10);
+  delay(1000);
 
   for (int i = 0; i < NUM_MOTORS; i++) {
     Mx[i]->begin();
@@ -40,7 +34,16 @@ void Mobile_command::begin() {
     kfx[i]->begin();
   }
 
-  delay(10);
+  delay(1000);
+
+  // Wire.begin(ADC_SDA, ADC_SCL, 400000);
+
+  Wire1.begin(BNO_SDA, BNO_SCL, 400000);
+  while (!bno.begin()) delay(10);
+  bno.setExtCrystalUse(true);
+
+   delay(1000);
+
 }
 
 void Mobile_command::control(float _vx, float _vy, float _wz) {
@@ -59,7 +62,7 @@ void Mobile_command::control(float _vx, float _vy, float _wz) {
     float* kf_ptr = kfx[i]->Compute(fb_q[i],
                                     cmd_ux[i] * ffdx[i]->Vmax / ffdx[i]->Umax);
     fb_qd[i] = kf_ptr[1];
-    fb_i[i] = kf_ptr[3];
+    fb_i[i] = (1000 * fb_i[i] / 1012.0) + (12.0 * kf_ptr[3] / 1012.0);
 
     if (qd_target[i] != 0) {
       cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(qd_target[i] - fb_qd[i]) + ffdx[i]->Compute(qd_target[i], CURRENT_GAIN * fb_i[i]),
