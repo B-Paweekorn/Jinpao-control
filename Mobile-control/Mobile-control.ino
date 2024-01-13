@@ -1,6 +1,6 @@
 #include "Mobile_command.h"
 
-void timer_callback();
+void IRAM_ATTR timer_callback();
 void control_task_callback(void *pv);
 
 TaskHandle_t control_task = NULL;
