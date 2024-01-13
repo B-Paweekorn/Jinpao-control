@@ -38,7 +38,8 @@ void Mobile_command::begin() {
 
   // Wire.begin(ADC_SDA, ADC_SCL, 400000);
 
-  Wire1.begin(BNO_SDA, BNO_SCL, 400000);
+  // Wire1.begin(BNO_SDA, BNO_SCL, 100000);
+  Wire1.setPins(BNO_SDA, BNO_SCL);
   while (!bno.begin()) delay(1);
   bno.setExtCrystalUse(true);
 
