@@ -2,10 +2,10 @@
 
 /*-----QEI(encA, encB)------*/
 
-QEI enc0(9, 10); 
-QEI enc1(7, 8);
-QEI enc2(4, 5);
-QEI enc3(1, 2);
+QEI enc0(18, 17); 
+QEI enc1(33, 34);
+QEI enc2(36, 35);
+QEI enc3(37, 38);
 
 long counter0 = 0;
 long counter1 = 0;
@@ -16,6 +16,8 @@ void setup() {
   Serial.begin(115200);
 
   /*-----Setup QEI Start-----*/
+  // pinMode(33,INPUT_PULLUP);
+  // pinMode(34,INPUT_PULLUP);
 
   enc0.begin();
   enc1.begin();
@@ -35,8 +37,8 @@ void loop() {
 
   uint32_t dt = micros() - time;
 
-  Serial.print(dt);
-  Serial.print(' ');
+  // Serial.print(dt);
+  // Serial.print(' ');
   Serial.print(counter0);
   Serial.print(' ');
   Serial.print(counter1);
