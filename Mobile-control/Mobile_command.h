@@ -46,9 +46,6 @@ private:
   KalmanFilter* kfx[NUM_MOTORS];
   Kinematics* kinematics;
 
-  uint32_t timestamp[NUM_MOTORS];
-  float target[NUM_MOTORS];
-
   void ramp(float set_target, uint8_t index);
 
 public:

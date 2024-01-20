@@ -43,15 +43,29 @@ void setup() {
 
   delay(5000);
   neopixelWrite(21, 10, 0, 0);
+
+  timestamp = micros();
+  timestamp_cmd = micros();
+  timestamp_print = micros();
 }
 void loop() {
 
+  //Control loop
+  current_timestep = micros();
+  if (current_timestep - timestamp >= timestep) {
+    dt = current_timestep - timestamp;
+    timestamp = micros();
+    Mobile.control(vx, vy, vw);
+
+    odom_data = Mobile.getODOM();
+  }
+
   //Print loop
   current_timestep_print = micros();
-  if (current_timestep_print - timestamp_print > timestep_print) {
+  if (current_timestep_print - timestamp_print >= timestep_print) {
     timestamp_print = micros();
 
-    imu_data = Mobile.getIMU();
+    // imu_data = Mobile.getIMU();
 
     // Serial.print(imu_data.accel.x);
     // Serial.print(" ");
@@ -60,14 +74,14 @@ void loop() {
     // Serial.println(imu_data.accel.z);
     // Serial.println(" ");
 
-    // Serial.print(odom_data.vx);
-    // Serial.print(" ");
-    // Serial.print(odom_data.vy);
-    // Serial.print(" ");
-    // Serial.print(odom_data.wz);
-    // Serial.print(" ");
-    Serial.print(dt);
+    Serial.print(odom_data.vx);
     Serial.print(" ");
+    Serial.print(odom_data.vy);
+    Serial.print(" ");
+    Serial.print(odom_data.wz);
+    Serial.print(" ");
+    // Serial.print(dt);
+    // Serial.print(" ");
     // Serial.print(Mobile.cmd_ux[0]);
     // Serial.print(" ");
     // Serial.print(Mobile.cmd_ux[1]);
@@ -83,14 +97,14 @@ void loop() {
     // Serial.print((Mobile.fb_q[2] - q_prev[2]) * 100);
     // Serial.print(" ");
     // Serial.print((Mobile.fb_q[3] - q_prev[3]) * 100);
-    Serial.print(Mobile.qd_target[0]);
-    Serial.print(" ");
-    Serial.print(Mobile.qd_target[1]);
-    Serial.print(" ");
-    Serial.print(Mobile.qd_target[2]);
-    Serial.print(" ");
-    Serial.print(Mobile.qd_target[3]);
-    Serial.print(" ");
+    // Serial.print(Mobile.qd_target[0]);
+    // Serial.print(" ");
+    // Serial.print(Mobile.qd_target[1]);
+    // Serial.print(" ");
+    // Serial.print(Mobile.qd_target[2]);
+    // Serial.print(" ");
+    // Serial.print(Mobile.qd_target[3]);
+    // Serial.print(" ");
     Serial.print(Mobile.fb_qd[0]);
     Serial.print(" ");
     Serial.print(Mobile.fb_qd[1]);
@@ -99,15 +113,15 @@ void loop() {
     Serial.print(" ");
     Serial.println(Mobile.fb_qd[3]);
 
-    q_prev[0] = Mobile.fb_q[0];
-    q_prev[1] = Mobile.fb_q[1];
-    q_prev[2] = Mobile.fb_q[2];
-    q_prev[3] = Mobile.fb_q[3];
+    // q_prev[0] = Mobile.fb_q[0];
+    // q_prev[1] = Mobile.fb_q[1];
+    // q_prev[2] = Mobile.fb_q[2];
+    // q_prev[3] = Mobile.fb_q[3];
   }
 
   //Cmd loop
   current_timestep_cmd = micros();
-  if (current_timestep_cmd - timestamp_cmd > timestep_cmd) {
+  if (current_timestep_cmd - timestamp_cmd >= timestep_cmd) {
     timestamp_cmd = micros();
     if (flag == 0) {
       flag = 1;
@@ -145,15 +159,5 @@ void loop() {
       vy = 0;
       vw = 0;
     }
-  }
-
-  //Control loop
-  current_timestep = micros();
-  if (current_timestep - timestamp > timestep) {
-    dt = current_timestep - timestamp;
-    timestamp = micros();
-    Mobile.control(vx, vy, vw);
-
-    odom_data = Mobile.getODOM();
   }
 }

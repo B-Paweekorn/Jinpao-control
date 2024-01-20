@@ -9,6 +9,9 @@ QEI ::QEI(int encA, int encB, float ppr, int limit, uint32_t filt)
 
 void QEI ::begin() {
 
+  pinMode(encA_pin, INPUT);
+  pinMode(encB_pin, INPUT);
+
   pcnt_unit_config_t unit_config;
   unit_config.high_limit = pcnt_limit;
   unit_config.low_limit = -pcnt_limit;
