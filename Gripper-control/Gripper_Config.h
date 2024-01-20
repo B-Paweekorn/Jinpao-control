@@ -27,7 +27,7 @@
 #define ENC_1_A_PIN 37
 #define ENC_1_B_PIN 38
 
-#define ENC_1_PPR 64.0 * 4.0 * 12.0 //2048.0 * 4.0
+#define ENC_1_PPR 8192.0
 /*-----Config Motor End-----*/
 
 /*-----Config Robot Base Start-----*/

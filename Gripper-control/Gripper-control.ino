@@ -28,7 +28,7 @@ Gripper_command Gripper(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx);
 //float signal = 0;
 float q_prev = 0;
 
-double newVt[5] = { 0, 10, 0, 20, 0 };
+double newVt[5] = { 0, 8192, 8192, 8192, 8192 };
 uint8_t i = 0;
 //Generate Wave Form
 // uint8_t signal_form = 2;
@@ -54,26 +54,15 @@ uint32_t pos = 0;
 
 void setup() {
   Serial.begin(115200);
-  //USBSerial.begin(115200);
   Gripper.begin();
-  delay(3000);
-  //newVt = 100.0;
+  delay(5000);
 }
 void loop() {
-
-  // // USBSerial.println("Pass");
-  // if (Serial.available()) {
-  //   String serialInput = Serial.readString();
-  //   serialInput.trim();
-  //   // You can add other controls here.
-  //   pos = serialInput.toDouble();
-  // }
-
   if (tpx[0]->getFinished()) {
     if (i < 4) {
       i += 1;
     } else {
-      i = 0;
+      i = 3;
     }
   }
 
@@ -118,17 +107,16 @@ void loop() {
     // Serial.println();
     //Serial.print(signal);
     // Serial.print(" ");
-    // Serial.print(Gripper.fb_q[0]);
+
+    Serial.print(Gripper.fb_q[0]);
+    Serial.print(" ");
+    Serial.println(tpx[0]->getVelocity());
+
+    // Serial.print(Gripper.q_target[0], 10);
     // Serial.print(" ");
-    // Serial.print(tpx[0]->getVelocity());
-
-
-
-    Serial.print(Gripper.q_target[0], 10);
-    Serial.print(" ");
-    Serial.print(Gripper.fb_q[0], 10);
-    Serial.print(" ");
-    Serial.println(Gripper.q_target[0] - Gripper.fb_q[0], 10);
+    // Serial.print(Gripper.fb_q[0], 10);
+    // Serial.print(" ");
+    // Serial.println(Gripper.q_target[0] - Gripper.fb_q[0], 10);
 
     // Serial.print(" ");
     // Serial.print(-10);
