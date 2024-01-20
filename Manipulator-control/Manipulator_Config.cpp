@@ -1,17 +1,17 @@
 #include "Manipulator_Config.h"
 #include "MotionGenerator.h"
 
-// Adafruit_MCP23X17 mcp;
+Adafruit_MCP23X17 mcp;
 
-// Homing_controller hc1(mcp,MOTOR_1_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
-// Homing_controller hc2(mcp,MOTOR_2_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
-// Homing_controller hc3(mcp,MOTOR_3_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
-// Homing_controller hcH(mcp,MOTOR_H_HOME_PIN,1,TIMEOUT_MOTOR_H,SPEED_MOTOR_H);
+Homing_controller hc1(mcp,MOTOR_1_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
+Homing_controller hc2(mcp,MOTOR_2_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
+Homing_controller hc3(mcp,MOTOR_3_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
+Homing_controller hcH(mcp,MOTOR_H_HOME_PIN,1,TIMEOUT_MOTOR_H,SPEED_MOTOR_H);
 
-MotionGenerator tpH(5, CYTRON_MOTOR_680RPM_250W_Constant.qdd_max, 0);
-MotionGenerator tp1(5, FAULHABER_2342L012CR_Constant.qdd_max, 0);
-MotionGenerator tp2(5, FAULHABER_2342L012CR_Constant.qdd_max, 0);
-MotionGenerator tp3(5, FAULHABER_2342L012CR_Constant.qdd_max, 0);
+MotionGenerator tpH(CYTRON_MOTOR_680RPM_250W_Constant.qd_max, CYTRON_MOTOR_680RPM_250W_Constant.qdd_max, 0);
+MotionGenerator tp1(FAULHABER_2342L012CR_Constant.qd_max, FAULHABER_2342L012CR_Constant.qdd_max, 0);
+MotionGenerator tp2(FAULHABER_2342L012CR_Constant.qd_max, FAULHABER_2342L012CR_Constant.qdd_max, 0);
+MotionGenerator tp3(FAULHABER_2342L012CR_Constant.qd_max, FAULHABER_2342L012CR_Constant.qdd_max, 0);
 
 QEI encH(ENC_H_A_PIN, ENC_H_B_PIN, ENC_H_PPR);
 QEI enc1(ENC_1_A_PIN, ENC_1_B_PIN, ENC_1_PPR);
@@ -57,29 +57,37 @@ KalmanFilter kf3(FAULHABER_2342L012CR_MatrixA,
 
 PID_CONTROLLER pidH_pos(CYTRON_MOTOR_680RPM_250W_POSITION_KP,
                         CYTRON_MOTOR_680RPM_250W_POSITION_KI,
-                        CYTRON_MOTOR_680RPM_250W_POSITION_KD);
+                        CYTRON_MOTOR_680RPM_250W_POSITION_KD,
+                        CYTRON_MOTOR_680RPM_250W_Constant.qd_max);
 PID_CONTROLLER pid1_pos(FAULHABER_2342L012CR_POSITION_KP,
                         FAULHABER_2342L012CR_POSITION_KI,
-                        FAULHABER_2342L012CR_POSITION_KD);
+                        FAULHABER_2342L012CR_POSITION_KD,
+                        FAULHABER_2342L012CR_Constant.qd_max);
 PID_CONTROLLER pid2_pos(FAULHABER_2342L012CR_POSITION_KP,
                         FAULHABER_2342L012CR_POSITION_KI,
-                        FAULHABER_2342L012CR_POSITION_KD);
+                        FAULHABER_2342L012CR_POSITION_KD,
+                        FAULHABER_2342L012CR_Constant.qd_max);
 PID_CONTROLLER pid3_pos(FAULHABER_2342L012CR_POSITION_KP,
                         FAULHABER_2342L012CR_POSITION_KI,
-                        FAULHABER_2342L012CR_POSITION_KD);
+                        FAULHABER_2342L012CR_POSITION_KD,
+                        FAULHABER_2342L012CR_Constant.qd_max);
 
 PID_CONTROLLER pidH_vel(CYTRON_MOTOR_680RPM_250W_VElOCITY_KP,
                         CYTRON_MOTOR_680RPM_250W_VElOCITY_KI,
-                        CYTRON_MOTOR_680RPM_250W_VElOCITY_KD);
+                        CYTRON_MOTOR_680RPM_250W_VElOCITY_KD,
+                        CYTRON_MOTOR_680RPM_250W_Constant.U_max);
 PID_CONTROLLER pid1_vel(FAULHABER_2342L012CR_VElOCITY_KP,
                         FAULHABER_2342L012CR_VElOCITY_KI,
-                        FAULHABER_2342L012CR_VElOCITY_KD);
+                        FAULHABER_2342L012CR_VElOCITY_KD,
+                        FAULHABER_2342L012CR_Constant.U_max);
 PID_CONTROLLER pid2_vel(FAULHABER_2342L012CR_VElOCITY_KP,
                         FAULHABER_2342L012CR_VElOCITY_KI,
-                        FAULHABER_2342L012CR_VElOCITY_KD);
+                        FAULHABER_2342L012CR_VElOCITY_KD,
+                        FAULHABER_2342L012CR_Constant.U_max);
 PID_CONTROLLER pid3_vel(FAULHABER_2342L012CR_VElOCITY_KP,
                         FAULHABER_2342L012CR_VElOCITY_KI,
-                        FAULHABER_2342L012CR_VElOCITY_KD);
+                        FAULHABER_2342L012CR_VElOCITY_KD,
+                        FAULHABER_2342L012CR_Constant.U_max);
 
 DC_MOTOR_FFD ffdH(&CYTRON_MOTOR_680RPM_250W_Constant);
 DC_MOTOR_FFD ffd1(&FAULHABER_2342L012CR_Constant);
@@ -95,5 +103,5 @@ PID_CONTROLLER* pidx_vel[4] = { &pidH_vel, &pid1_vel, &pid2_vel, &pid3_vel  };
 DC_MOTOR_FFD* ffdx[4] = { &ffdH, &ffd1, &ffd2, &ffd3  };
 KalmanFilter* kfx[4] = { &kfH, &kf1, &kf2, &kf3  };
 MotionGenerator* tpx[4] = { &tpH, &tp1, &tp2, &tp3  };
-// Homing_controller* hcx[4] = { &hc1, &hc2, &hc3, &hcH };
+Homing_controller* hcx[4] = { &hc1, &hc2, &hc3, &hcH };
 

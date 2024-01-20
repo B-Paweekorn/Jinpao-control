@@ -92,6 +92,6 @@ extern DC_MOTOR_FFD* ffdx[];
 extern KalmanFilter* kfx[];
 extern MotionGenerator* tpx[];
 extern Homing_controller* hcx[];
-// extern Adafruit_MCP23X17 mcp;
+extern Adafruit_MCP23X17 mcp;
 
 #endif

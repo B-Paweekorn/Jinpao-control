@@ -9,7 +9,8 @@ MotorConstant_Structure FAULHABER_2342L012CR_Constant = {
   .B = 0.00706757271,
   .V_max = 12.0,
   .U_max = 16383.0,
-  .qdd_max = 13.0
+  .qdd_max = 13.0,
+  .qd_max = 11.0
 };
 
 float FAULHABER_2342L012CR_MatrixA[16] = { 1.0, 7.958559454481690E-05, -0.128575229449185, 6.400636010723209E-05,

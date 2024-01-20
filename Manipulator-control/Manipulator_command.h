@@ -35,8 +35,6 @@ private:
   uint32_t timestamp[NUM_MOTORS];
   float target[NUM_MOTORS];
 
-  void ramp(float set_target, uint8_t index);
-
 
 public:
   float q_target[NUM_MOTORS];

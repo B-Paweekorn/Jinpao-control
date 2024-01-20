@@ -13,6 +13,8 @@ typedef struct {
   float V_max;
   float U_max;
   float qdd_max;
+  float qd_max;
+
 } MotorConstant_Structure;
 
 int32_t PWM_Satuation(float _u, int32_t _upper_limit, int32_t _lower_limit);
@@ -28,10 +30,11 @@ class PID_CONTROLLER {
   float ek_2 = 0;
 
   float u = 0;
+  float u_max = 0;
 
   public:
 
-  PID_CONTROLLER(float _Kp, float _Ki, float _Kd);
+  PID_CONTROLLER(float _Kp, float _Ki, float _Kd, float _u_max);
 
   float Compute(float ek);
 

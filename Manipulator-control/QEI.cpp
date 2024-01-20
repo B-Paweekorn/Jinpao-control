@@ -3,11 +3,11 @@
 #include "QEI.h"
 
 QEI ::QEI(int encA, int encB, float ppr, int limit, uint32_t filt)
-  : encA_pin(encA), encB_pin(encB), pcnt_limit(limit), filter_ns(filt) {
-    pulse_per_rev = ppr;
-  }
+  : encA_pin(encA), encB_pin(encB), pulse_per_rev(ppr), pcnt_limit(limit), filter_ns(filt) {}
 
 void QEI ::begin() {
+  pinMode(encA_pin, INPUT);
+  pinMode(encB_pin, INPUT);
 
   pcnt_unit_config_t unit_config;
   unit_config.high_limit = pcnt_limit;
