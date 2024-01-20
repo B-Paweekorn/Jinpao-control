@@ -3,12 +3,6 @@
 void timer0_callback();
 void control_loop(void *pv);
 
-//Print loop Time (100 Hz)
-unsigned long timestamp_print = 0;
-int32_t timestep_print = 10000;
-//Control loop Time (1000 Hz)
-unsigned long timestamp = 0;
-int timestep = 1000;
 //Control loop Time (1 Hz)
 unsigned long timestamp_cmd = 0;
 int timestep_cmd = 2.5e6;
@@ -49,9 +43,7 @@ void setup() {
   timerAlarm(htim0, 1000, true, 0);
   neopixelWrite(21, 10, 0, 0);
 
-  timestamp = micros();
   timestamp_cmd = micros();
-  timestamp_print = micros();
 }
 
 void timer0_callback() {
@@ -75,7 +67,6 @@ void loop() {
   uint64_t time = micros();
 
   if (xSemaphoreTake(update_sem, 0) == pdTRUE) {
-    timestamp_print = time;
 
     imu_data = Mobile.getIMU();
     odom_data = Mobile.getODOM();
@@ -97,7 +88,7 @@ void loop() {
     Serial.print(" ");
     Serial.print(Mobile.fb_qd[3]);
     Serial.print(" ");
-    
+
     Serial.print(15);
     Serial.print(" ");
     Serial.println(-15);
