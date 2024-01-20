@@ -15,7 +15,7 @@
 
 class Manipulator_command {
 
- Adafruit_MCP23X17& mcp;
+  Adafruit_MCP23X17& mcp;
 private:
   static const int NUM_MOTORS = 4;  // Number of motors, encoders, and PIDs
   float dt = 1 / 1000.0;
@@ -39,7 +39,7 @@ private:
 public:
   float q_target[NUM_MOTORS];
   float qd_target[NUM_MOTORS];
-
+  float i_gain[NUM_MOTORS] = { (18.0 / 26.6), (9.0 / 145.0), (9.0 / 145.0), (9.0 / 145.0), (9.0 / 145.0) };
   int16_t cmd_vx[NUM_MOTORS];
   int16_t cmd_ux[NUM_MOTORS];
   double fb_q[NUM_MOTORS];
