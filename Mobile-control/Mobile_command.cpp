@@ -38,31 +38,14 @@ void Mobile_command::begin() {
 
   // Wire.begin(ADC_SDA, ADC_SCL, 400000);
 
-<<<<<<< HEAD
   // Wire1.begin(BNO_SDA, BNO_SCL, 100000);
   Wire1.setPins(BNO_SDA, BNO_SCL);
-<<<<<<< HEAD
-  Wire1.setClock(100000);
+  Wire1.setClock(400000);
   Wire1.setTimeOut(10);
   while (!bno.begin()) delay(1);
   bno.setExtCrystalUse(true);
 
   delay(1000);
-=======
-  while (!bno.begin()) delay(1);
-  bno.setExtCrystalUse(true);
-
-   delay(1000);
-
->>>>>>> 53e2cae07b648baf61b2ca8cfb40baa61d800e8e
-=======
-  Wire1.begin(BNO_SDA, BNO_SCL, 400000);
-  while (!bno.begin()) delay(10);
-  bno.setExtCrystalUse(true);
-
-   delay(1000);
-
->>>>>>> parent of e3eaff8 (last commit)
 }
 
 void Mobile_command::control(float _vx, float _vy, float _wz) {
@@ -84,7 +67,7 @@ void Mobile_command::control(float _vx, float _vy, float _wz) {
     fb_i[i] = (1000 * fb_i[i] / 1012.0) + (12.0 * kf_ptr[3] / 1012.0);
 
     if (qd_target[i] != 0) {
-      cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(qd_target[i] - fb_qd[i]) + ffdx[i]->Compute(qd_target[i], CURRENT_GAIN * fb_i[i]),
+      cmd_ux[i] = PWM_Satuation(pidx[i]->Compute(qd_target[i] - fb_qd[i]) + ffdx[i]->Compute(qd_target[i], fb_i[i]),
                                 ffdx[i]->Umax,
                                 -1 * ffdx[i]->Umax);
     } else {
@@ -100,19 +83,20 @@ void Mobile_command::control(float _vx, float _vy, float _wz) {
 IMU_DATA Mobile_command::getIMU() {
   IMU_DATA imu_data;
   sensors_event_t angVelocityData, linearAccelData;
-
+  bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
+  bno.getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
   imu::Quaternion quat = bno.getQuat();
+
   imu_data.quat.x = quat.x();
   imu_data.quat.y = quat.y();
   imu_data.quat.z = quat.z();
   imu_data.quat.w = quat.w();
 
-  bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
+
   imu_data.gyro.x = angVelocityData.gyro.x;
   imu_data.gyro.y = angVelocityData.gyro.y;
   imu_data.gyro.z = angVelocityData.gyro.z;
 
-  bno.getEvent(&linearAccelData, Adafruit_BNO055::VECTOR_LINEARACCEL);
   imu_data.accel.x = linearAccelData.acceleration.x;
   imu_data.accel.y = linearAccelData.acceleration.y;
   imu_data.accel.z = linearAccelData.acceleration.z;
@@ -121,7 +105,7 @@ IMU_DATA Mobile_command::getIMU() {
 }
 
 ODOM_DATA Mobile_command::getODOM() {
-  Kinematics::Velocity robot_odom = kinematics->Forward_Kinematics_Velocity(fb_q[0], fb_q[1], fb_q[2], fb_q[3]);
+  Kinematics::Velocity robot_odom = kinematics->Forward_Kinematics_Velocity(fb_qd[0], fb_qd[1], fb_qd[2], fb_qd[3]);
   ODOM_DATA odom = {
     .vx = robot_odom.vx,
     .vy = robot_odom.vy,
@@ -131,8 +115,10 @@ ODOM_DATA Mobile_command::getODOM() {
 }
 
 void Mobile_command::ramp(float set_target, uint8_t index) {
+  static uint32_t timestamp[NUM_MOTORS] = { 0 };
+  static float target[NUM_MOTORS] = { 0 };
   if (set_target != target[index]) {
-    timestamp[index] = millis() + (abs(set_target - target[index]) * 1000.0 / ffdx[index]->qddmax);
+    timestamp[index] = millis() + (abs(set_target - fb_qd[index]) * 1000.0 / ffdx[index]->qddmax);
     target[index] = set_target;
   }
   if (millis() < timestamp[index]) {

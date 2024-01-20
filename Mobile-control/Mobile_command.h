@@ -11,8 +11,6 @@
 #include "Mobile_Config.h"
 #include "Wire.h"
 
-#define CURRENT_GAIN 1 //18.0 / 26.6
-
 typedef struct {
   float x;
   float y;
@@ -45,9 +43,6 @@ private:
   DC_MOTOR_FFD* ffdx[NUM_MOTORS];
   KalmanFilter* kfx[NUM_MOTORS];
   Kinematics* kinematics;
-
-  uint32_t timestamp[NUM_MOTORS];
-  float target[NUM_MOTORS];
 
   void ramp(float set_target, uint8_t index);
 
