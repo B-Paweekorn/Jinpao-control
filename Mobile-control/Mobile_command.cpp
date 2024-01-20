@@ -41,12 +41,20 @@ void Mobile_command::begin() {
 
   // Wire1.begin(BNO_SDA, BNO_SCL, 100000);
   Wire1.setPins(BNO_SDA, BNO_SCL);
+<<<<<<< HEAD
   Wire1.setClock(100000);
   Wire1.setTimeOut(10);
   while (!bno.begin()) delay(1);
   bno.setExtCrystalUse(true);
 
   delay(1000);
+=======
+  while (!bno.begin()) delay(1);
+  bno.setExtCrystalUse(true);
+
+   delay(1000);
+
+>>>>>>> 53e2cae07b648baf61b2ca8cfb40baa61d800e8e
 }
 
 void Mobile_command::control(float _vx, float _vy, float _wz) {
