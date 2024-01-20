@@ -38,7 +38,7 @@ void Gripper_command::begin() {
   // while (!bno.begin()) vTaskDelay(10 / portTICK_PERIOD_MS);
   // bno.setExtCrystalUse(true);
 
-  delay(10);
+  delay(1000);
 
   for (int i = 0; i < NUM_MOTORS; i++) {
     Mx[i]->begin();
@@ -53,7 +53,7 @@ void Gripper_command::begin() {
     kfx[i]->begin();
   }
 
-  delay(10);
+  delay(1000);
 }
 
 void Gripper_command::setGoal(uint8_t M_index, float targetPosition) {

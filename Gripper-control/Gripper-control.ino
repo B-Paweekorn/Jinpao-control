@@ -28,7 +28,7 @@ Gripper_command Gripper(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx);
 //float signal = 0;
 float q_prev = 0;
 
-double newVt[5] = { 0, 8192, 8192, 8192, 8192 };
+double newVt[5] = { 0, 15, 30, 15, 30 };
 uint8_t i = 0;
 //Generate Wave Form
 // uint8_t signal_form = 2;
@@ -52,17 +52,22 @@ unsigned long lowTime = 1000;
 unsigned long totalPeriod = rampUpTime + highTime + rampDownTime + lowTime;
 uint32_t pos = 0;
 
+uint32_t qtarget = 0.0;
 void setup() {
   Serial.begin(115200);
   Gripper.begin();
+  pinMode(10, OUTPUT);
+  digitalWrite(10, LOW);
   delay(5000);
+  Gripper.setGoal(0, 0);
+  
 }
 void loop() {
   if (tpx[0]->getFinished()) {
     if (i < 4) {
       i += 1;
     } else {
-      i = 3;
+      i = 4;
     }
   }
 
@@ -108,9 +113,9 @@ void loop() {
     //Serial.print(signal);
     // Serial.print(" ");
 
-    Serial.print(Gripper.fb_q[0]);
-    Serial.print(" ");
-    Serial.println(tpx[0]->getVelocity());
+    // Serial.print(Gripper.fb_q[0]);
+    // Serial.print(" ");
+    // Serial.println(Gripper.q_target[0]);
 
     // Serial.print(Gripper.q_target[0], 10);
     // Serial.print(" ");
@@ -157,10 +162,22 @@ void loop() {
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
+    Serial.print(Gripper.fb_q[0]);
+    Serial.print(" ");
+    Serial.println(Gripper.q_target[0]);
+
+    qtarget = 30;
+    if(Gripper.q_target[0] == 30.0){
+      qtarget = Gripper.fb_q[0];
+      Serial.println("Reached");
+      digitalWrite(10, HIGH);
+    }
+    else{
+      Gripper.setGoal(0, qtarget);
+    }
     // Mx[0]->set_duty(6 * 16383 / 12.0);
     //Mx[0]->set_duty(signal * 16383 / 12.0);
-
-
+    // Gripper.setGoal(0, 30.0);
     // //Kalman Filter Tunning
     //Gripper.tune(0, signal, state);
 
@@ -169,7 +186,5 @@ void loop() {
 
     // //Position Control Tunning
     // if(state == 'P')
-    // Gripper.setGoal(0, pos);
-    Gripper.setGoal(0, newVt[i]);
   }
 }

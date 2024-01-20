@@ -24,8 +24,8 @@
 
 #define MOTOR_1_DIR_PIN 40
 
-#define ENC_1_A_PIN 37
-#define ENC_1_B_PIN 38
+#define ENC_1_A_PIN 18
+#define ENC_1_B_PIN 17
 
 #define ENC_1_PPR 8192.0
 /*-----Config Motor End-----*/

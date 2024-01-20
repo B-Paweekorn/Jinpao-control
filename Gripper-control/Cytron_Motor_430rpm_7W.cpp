@@ -9,8 +9,8 @@ MotorConstant_Structure CYTRON_MOTOR_430RPM_7W_Constant = {
   .B = 0.001114942610956,
   .V_max = 18.0,
   .U_max = 16383.0,
-  .qdd_max = 90.0,
-  .qd_max = 42.0 //rad/s
+  .qdd_max = 90.0, //90.0,
+  .qd_max = 42.0//42.0 //rad/s
 };
 
 float CYTRON_MOTOR_430RPM_7W_MatrixA[16] = { 1.0, 9.947641097582700E-04, -2.338658274849931E-04, 9.330414794773396E-06,
