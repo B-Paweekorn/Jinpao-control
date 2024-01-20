@@ -74,11 +74,11 @@ void loop() {
     imu_data = Mobile.getIMU();
     odom_data = Mobile.getODOM();
     
-    Serial.print(Mobile.qd_target[0]);
+    Serial.print(odom_data.vx);
     Serial.print(" ");
-    Serial.print(Mobile.qd_target[1]);
+    Serial.print(odom_data.vy);
     Serial.print(" ");
-    Serial.print(Mobile.qd_target[2]);
+    Serial.print(odom_data.wz);
     Serial.print(" ");
     Serial.print(Mobile.qd_target[3]);
     Serial.print(" ");

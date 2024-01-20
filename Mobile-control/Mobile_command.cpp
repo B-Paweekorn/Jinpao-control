@@ -103,7 +103,7 @@ IMU_DATA Mobile_command::getIMU() {
 }
 
 ODOM_DATA Mobile_command::getODOM() {
-  Kinematics::Velocity robot_odom = kinematics->Forward_Kinematics_Velocity(fb_q[0], fb_q[1], fb_q[2], fb_q[3]);
+  Kinematics::Velocity robot_odom = kinematics->Forward_Kinematics_Velocity(fb_qd[0], fb_qd[1], fb_qd[2], fb_qd[3]);
   ODOM_DATA odom = {
     .vx = robot_odom.vx,
     .vy = robot_odom.vy,
