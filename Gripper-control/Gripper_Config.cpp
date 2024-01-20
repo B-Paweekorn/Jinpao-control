@@ -25,11 +25,13 @@ KalmanFilter kf1(CYTRON_MOTOR_430RPM_7W_MatrixA,
 
 PID_CONTROLLER pid1_pos(CYTRON_MOTOR_430RPM_7W_POSITION_KP,
                         CYTRON_MOTOR_430RPM_7W_POSITION_KI,
-                        CYTRON_MOTOR_430RPM_7W_POSITION_KD);
+                        CYTRON_MOTOR_430RPM_7W_POSITION_KD,
+                        CYTRON_MOTOR_430RPM_7W_Constant.qd_max);
 
 PID_CONTROLLER pid1_vel(CYTRON_MOTOR_430RPM_7W_VElOCITY_KP,
                         CYTRON_MOTOR_430RPM_7W_VElOCITY_KI,
-                        CYTRON_MOTOR_430RPM_7W_VElOCITY_KD);
+                        CYTRON_MOTOR_430RPM_7W_VElOCITY_KD,
+                        CYTRON_MOTOR_430RPM_7W_Constant.U_max);
 
 DC_MOTOR_FFD ffd1(&CYTRON_MOTOR_430RPM_7W_Constant);
 /*-----Config Controller Start-----*/

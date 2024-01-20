@@ -15,10 +15,8 @@
 //   }
 // }
 
-Gripper_command::Gripper_command(ESP32_CYTRON_MD *_Mx[], QEI *_encx[], PID_CONTROLLER *_pidx_pos[], PID_CONTROLLER *_pidx_vel[], DC_MOTOR_FFD *_ffdx[], KalmanFilter *_kfx[], MotionGenerator *_tpx[])
-{
-  for (int i = 0; i < NUM_MOTORS; ++i)
-  {
+Gripper_command::Gripper_command(ESP32_CYTRON_MD *_Mx[], QEI *_encx[], PID_CONTROLLER *_pidx_pos[], PID_CONTROLLER *_pidx_vel[], DC_MOTOR_FFD *_ffdx[], KalmanFilter *_kfx[], MotionGenerator *_tpx[]) {
+  for (int i = 0; i < NUM_MOTORS; ++i) {
     Mx[i] = _Mx[i];
     encx[i] = _encx[i];
     pidx_pos[i] = _pidx_pos[i];
@@ -29,10 +27,8 @@ Gripper_command::Gripper_command(ESP32_CYTRON_MD *_Mx[], QEI *_encx[], PID_CONTR
   }
 }
 
-void Gripper_command::begin()
-{
-  for (int i = 0; i < NUM_MOTORS; i++)
-  {
+void Gripper_command::begin() {
+  for (int i = 0; i < NUM_MOTORS; i++) {
     encx[i]->begin();
   }
 
@@ -44,8 +40,7 @@ void Gripper_command::begin()
 
   delay(10);
 
-  for (int i = 0; i < NUM_MOTORS; i++)
-  {
+  for (int i = 0; i < NUM_MOTORS; i++) {
     Mx[i]->begin();
     Mx[i]->set_duty(0);
 
@@ -61,8 +56,7 @@ void Gripper_command::begin()
   delay(10);
 }
 
-void Gripper_command::setGoal(uint8_t M_index, float targetPosition)
-{
+void Gripper_command::setGoal(uint8_t M_index, float targetPosition) {
 
   q_target[M_index] = tpx[M_index]->update(targetPosition);
   qd_target[M_index] = tpx[M_index]->getVelocity();
@@ -73,9 +67,13 @@ void Gripper_command::setGoal(uint8_t M_index, float targetPosition)
   fb_qd[M_index] = kf_ptr[1];
   fb_i[M_index] = kf_ptr[3];
 
+
   if (q_target[M_index] != 0)
-  {
-    cmd_vx[M_index] = PWM_Satuation(pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]), ffdx[M_index]->qdmax, -1 * ffdx[M_index]->qdmax);
+  {  
+    //cmd_vx[M_index] = PWM_Satuation(pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]),
+                                  // ffdx[M_index]->qdmax,
+                                  // -1 * ffdx[M_index]->qdmax);
+    cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
   }
   else
   {
@@ -84,13 +82,13 @@ void Gripper_command::setGoal(uint8_t M_index, float targetPosition)
 
   // static int16_t u_duty;
 
-  if (qd_target[M_index] != 0)
-  {
-    // cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] - fb_qd[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
-    cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax); //
-  }
-  else
-  {
+  if (qd_target[M_index] + cmd_vx[M_index] != 0) {
+    // cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] - fb_qd[M_index])+ffdx[i]->Compute(qd_target[i], CURRENT_GAIN * fb_i[i]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
+
+    cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index])+ffdx[M_index]->Compute(qd_target[M_index], CURRENT_GAIN * fb_i[M_index]),
+                                    ffdx[M_index]->Umax,
+                                    -1 * ffdx[M_index]->Umax); //
+  } else {
     cmd_ux[M_index] = 0;
   }
 
@@ -98,14 +96,13 @@ void Gripper_command::setGoal(uint8_t M_index, float targetPosition)
   // // else if (tuining_state == 'K')
   // u_duty = target;
 
-  Mx[M_index]->set_duty(cmd_ux[M_index]); // cmd_ux[M_index]
+  Mx[M_index]->set_duty(cmd_ux[M_index]);  // cmd_ux[M_index]
 }
 
-void Gripper_command::tune(uint8_t M_index, float target, uint8_t tuining_state)
-{
+void Gripper_command::tune(uint8_t M_index, float target, uint8_t tuining_state) {
 
-  // q_target[M_index] = tpx[M_index]->update(target);
-  // qd_target[M_index] = target;
+  q_target[M_index] = tpx[M_index]->update(target);
+  qd_target[M_index] = tpx[M_index]->getVelocity();
 
   fb_q[M_index] += encx[M_index]->get_diff_count() * 2 * M_PI / encx[M_index]->pulse_per_rev;
   float *kf_ptr = kfx[M_index]->Compute(fb_q[M_index], cmd_ux[M_index] * ffdx[M_index]->Vmax / ffdx[M_index]->Umax);
@@ -115,24 +112,19 @@ void Gripper_command::tune(uint8_t M_index, float target, uint8_t tuining_state)
 
   if (q_target[M_index] != 0)
   {
-    cmd_vx[M_index] = PWM_Satuation(pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]), ffdx[M_index]->qdmax, -1 * ffdx[M_index]->qdmax);
+    cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
   }
   else
   {
     cmd_vx[M_index] = 0;
   }
 
-  fb_q[M_index] += encx[M_index]->get_diff_count() * 2 * M_PI / encx[M_index]->pulse_per_rev;
-  kf_ptr = kfx[M_index]->Compute(fb_q[M_index], cmd_ux[M_index] * ffdx[M_index]->Vmax / ffdx[M_index]->Umax);
-
-  fb_qd[M_index] = kf_ptr[1];
-  fb_i[M_index] = kf_ptr[3];
   // static int16_t u_duty;
 
   if (qd_target[M_index] != 0)
   {
     // cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] - fb_qd[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
-    cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax); //
+    cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index])+ffdx[M_index]->Compute(qd_target[M_index], CURRENT_GAIN * fb_i[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax); //
   }
   else
   {
@@ -142,6 +134,6 @@ void Gripper_command::tune(uint8_t M_index, float target, uint8_t tuining_state)
   // if (tuining_state == 'V') u_duty = cmd_ux[M_index];
   // // else if (tuining_state == 'K')
   // u_duty = target;
-
-  Mx[M_index]->set_duty(cmd_ux[M_index]); // cmd_ux[M_index]
+  //cmd_ux[M_index] = target;
+  Mx[M_index]->set_duty(cmd_ux[M_index]);  // cmd_ux[M_index]
 }

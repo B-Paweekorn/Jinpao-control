@@ -8,7 +8,7 @@
 #include "Wire.h"
 #include "MotionGenerator.h"
 
-#define CURRENT_GAIN 1.0/12.5
+#define CURRENT_GAIN 9.0/145.0
 
 
 
@@ -37,11 +37,13 @@ public:
   float q_target[NUM_MOTORS];
   float qd_target[NUM_MOTORS];
 
-  int16_t cmd_vx[NUM_MOTORS];
+  float cmd_vx[NUM_MOTORS];
   int16_t cmd_ux[NUM_MOTORS];
   double fb_q[NUM_MOTORS];
   float fb_qd[NUM_MOTORS];
   float fb_i[NUM_MOTORS];
+  float fb_q_raw[NUM_MOTORS];
+  float fb_q_pulse[NUM_MOTORS];
 
   // Gripper_command(ESP32_CYTRON_MD* _Mx[], PID_CONTROLLER* _pidx_pos[], PID_CONTROLLER* _pidx_vel[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], MotionGenerator* _tpx[]);
   Gripper_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], PID_CONTROLLER* _pidx_pos[], PID_CONTROLLER* _pidx_vel[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], MotionGenerator* _tpx[]);

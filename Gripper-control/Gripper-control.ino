@@ -2,13 +2,13 @@
 #include "math.h"
 #include "Gripper_command.h"
 #include "Esp32_Cytron_MDxx.h"
-//#include "SignalGenerator.h"
+#include "SignalGenerator.h"
 //#include "MotionGenerator.h"
 //Print loop Time (100 Hz)
 unsigned long prev_timestep_print;
 unsigned long current_timestep_print;
 unsigned long timestamp_print = 0;
-int32_t timestep_print = 10000;
+int32_t timestep_print = 100000;
 //Control loop Time (1000 Hz)
 unsigned long prev_timestep;
 unsigned long current_timestep;
@@ -28,53 +28,54 @@ Gripper_command Gripper(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx);
 //float signal = 0;
 float q_prev = 0;
 
-double newVt[5] = { 100, 100, 100, 100, 100 };
+double newVt[5] = { 0, 10, 0, 20, 0 };
 uint8_t i = 0;
 //Generate Wave Form
 // uint8_t signal_form = 2;
-// uint16_t Amplitude = 12;
-// unsigned long period_milli = 5000;
+uint16_t Amplitude = 11;
+unsigned long period_milli = 5000;
 
 //Tunning State
 uint8_t state = 'K';  // 'K':Kalman, 'V':Velocity, 'P':Position
 
 unsigned long startTime = 0;  // Variable to store the start time
 float signal = 0;             // Variable to store the signal value
-uint16_t Amplitude = 30;      // Maximum amplitude of the waveform
+//uint16_t Amplitude = 30;      // Maximum amplitude of the waveform
 
 // Durations for each phase in milliseconds
-unsigned long rampUpTime = 1000;
+unsigned long rampUpTime = 5000;
 unsigned long highTime = 1000;
-unsigned long rampDownTime = 1000;
+unsigned long rampDownTime = 5000;
 unsigned long lowTime = 1000;
 
 // Total period of the waveform
 unsigned long totalPeriod = rampUpTime + highTime + rampDownTime + lowTime;
+uint32_t pos = 0;
 
 void setup() {
   Serial.begin(115200);
   //USBSerial.begin(115200);
   Gripper.begin();
+  delay(3000);
   //newVt = 100.0;
-
-  //delay(5000);
 }
 void loop() {
 
-  // USBSerial.println("Pass");
+  // // USBSerial.println("Pass");
   // if (Serial.available()) {
   //   String serialInput = Serial.readString();
   //   serialInput.trim();
   //   // You can add other controls here.
-  //   newVt = serialInput.toDouble();
+  //   pos = serialInput.toDouble();
   // }
+
   if (tpx[0]->getFinished()) {
-    if (i <= 4) {
+    if (i < 4) {
       i += 1;
     } else {
       i = 0;
     }
-  };
+  }
 
   unsigned long currentTime = micros();
   unsigned long elapsedTime = (currentTime - startTime) / 1000;  // Elapsed time in milliseconds
@@ -96,8 +97,8 @@ void loop() {
     signal = 0;
   }
 
-
-  //signal = Signal_Generator(signal_form, Amplitude, period_milli);  //wave form, Amplitude, period (ms)
+  // signal = 12;
+  // signal = Signal_Generator(2, Amplitude, period_milli);  //wave form, Amplitude, period (ms)
 
   // if ((USBSerial.available() > 0) && (state == 'P')) {
   //   // read the incoming byte:
@@ -115,38 +116,53 @@ void loop() {
     // Serial.print(signal);
     // Serial.print(" ");
     // Serial.println();
-    // Serial.print(signal);
+    //Serial.print(signal);
     // Serial.print(" ");
     // Serial.print(Gripper.fb_q[0]);
     // Serial.print(" ");
     // Serial.print(tpx[0]->getVelocity());
+
+
+
+    Serial.print(Gripper.q_target[0], 10);
+    Serial.print(" ");
+    Serial.print(Gripper.fb_q[0], 10);
+    Serial.print(" ");
+    Serial.println(Gripper.q_target[0] - Gripper.fb_q[0], 10);
+
     // Serial.print(" ");
-    // Serial.print(-40);
+    // Serial.print(-10);
     // Serial.print(" ");
-    // Serial.print(40);
+    // Serial.println(10);
     // Serial.print(" ");
 
-    Serial.println(Gripper.q_target[0]-Gripper.fb_q[0]);
     // Serial.print(" ");
-    // Serial.print(Gripper.q_target[0]);
+    // Serial.print(Gripper.q_target[0] * 3072 / (2 * M_PI), 10);
     // Serial.print(" ");
-    // Serial.println(Gripper.fb_q[0]);
+    // Serial.print(Gripper.fb_q_pulse[0], 10);
+    // Serial.print(" ");
+    // Serial.print(Gripper.fb_q_pulse[0] - q_prev, 10);
 
-    // Serial.print(Gripper.qd_target[0]-Gripper.fb_qd[0]);
     // Serial.print(" ");
-    // Serial.print(Gripper.qd_target[0]);
+    // Serial.print(Gripper.cmd_vx[0]);
+
     // Serial.print(" ");
-    // Serial.println(Gripper.fb_qd[0]);
+    // Serial.print(Gripper.qd_target[0], 10);
+    // Serial.print(" ");
+    // Serial.print(Gripper.fb_qd[0], 10);
+    // Serial.print(" ");
+    // Serial.println(Gripper.qd_target[0] - Gripper.fb_qd[0], 10);
+
 
     // Serial.print(" ");
     // Serial.println(Gripper.fb_i[0]);
     // Serial.print(" ");
-    // Serial.println(Gripper.cmd_ux[0]);
+    // Serial.println(Gripper.cmd_vx[0]);
     // Serial.print(" ");
-    // Serial.println((Gripper.fb_q[0] - q_prev) * 100.0);  //Gripper.qd_target[3]
+    // Serial.print((Gripper.fb_q[0] - q_prev) * 100.0);  //Gripper.qd_target[3]
     // Serial.print(" ");
     // Serial.println(Gripper.fb_qd[0]);
-    // q_prev = Gripper.fb_q[0];
+    // q_prev = Gripper.fb_q_pulse[0];
   }
 
   //Control loop
@@ -158,14 +174,14 @@ void loop() {
 
 
     // //Kalman Filter Tunning
-    // Gripper.tune(0, signal, state);
+    //Gripper.tune(0, signal, state);
 
     // //Velocity Control Tunning
     // if(state == 'V') Gripper.tune(3, signal, state);
 
     // //Position Control Tunning
     // if(state == 'P')
-    Gripper.setGoal(0, 100);
-    //Gripper.setGoal(0, newVt[i]);
+    // Gripper.setGoal(0, pos);
+    Gripper.setGoal(0, newVt[i]);
   }
 }

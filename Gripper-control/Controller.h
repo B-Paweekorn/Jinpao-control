@@ -30,10 +30,11 @@ class PID_CONTROLLER {
   float ek_2 = 0;
 
   float u = 0;
+  float u_max = 0;
 
   public:
 
-  PID_CONTROLLER(float _Kp, float _Ki, float _Kd);
+  PID_CONTROLLER(float _Kp, float _Ki, float _Kd, float _u_max);
 
   float Compute(float ek);
 
@@ -49,7 +50,6 @@ class DC_MOTOR_FFD {
   float Vmax;
   float Umax;
   float qddmax;
-  float qdmax;
 
   DC_MOTOR_FFD(MotorConstant_Structure *_Mx);
 

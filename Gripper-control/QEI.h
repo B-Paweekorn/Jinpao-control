@@ -16,10 +16,9 @@ private:
   int pulse_count = 0;
   int prev_pulse_count = 0;
 
+
 public:
-
-  float pulse_per_rev;
-
+  float pulse_per_rev = 0;
   QEI(int encA, int encB, float ppr, int limit = 32767, uint32_t filt = 0);
 
   void begin();
