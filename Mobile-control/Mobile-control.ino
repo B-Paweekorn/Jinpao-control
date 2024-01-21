@@ -1,30 +1,41 @@
 #include "Mobile_command.h"
+#include "MCU_msgs.h"
 
 void timer0_callback();
 void control_loop(void *pv);
 
-//Control loop Time (1 Hz)
-unsigned long timestamp_cmd = 0;
-int timestep_cmd = 2.5e6;
-
-float vx, vy, vw = 0;
-
-uint8_t flag = 0;
 Mobile_command Mobile(Mx, encx, pidx, ffdx, kfx, kin);
 
 IMU_DATA imu_data;
 ODOM_DATA odom_data;
+ODOM_DATA odom_cmd;
 
 TaskHandle_t control_task;
 SemaphoreHandle_t control_sem;
 SemaphoreHandle_t update_sem;
 hw_timer_t *htim0;
 
+MCU_msgs esp_msgs;
+MCU_msgs ser_msgs;
+
+uint8_t tx_msg_buffer[120];
+
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(460800);
+  Serial.setTimeout(1);
+  while (!Serial)
+    ;
   neopixelWrite(21, 0, 10, 0);
 
   Mobile.begin();
+  MCU_msgs_Init(&esp_msgs,
+                13,
+                77,  // M
+                2);
+  MCU_msgs_Init(&ser_msgs,
+                3,
+                83,  // S
+                2);
   neopixelWrite(21, 0, 0, 10);
 
   delay(5000);
@@ -42,8 +53,6 @@ void setup() {
   timerAttachInterrupt(htim0, &timer0_callback);
   timerAlarm(htim0, 1000, true, 0);
   neopixelWrite(21, 10, 0, 0);
-
-  timestamp_cmd = micros();
 }
 
 void timer0_callback() {
@@ -55,8 +64,18 @@ void timer0_callback() {
 void control_loop(void *pv) {
   while (true) {
     static int counter = 0;
+
+    if (Serial.available()) {
+      decode_buffer2msg(&ser_msgs, Serial.read());
+      if (ser_msgs.status) {
+        odom_cmd.vx = ser_msgs.buff[0].f64;
+        odom_cmd.vy = ser_msgs.buff[1].f64;
+        odom_cmd.wz = ser_msgs.buff[2].f64;
+      }
+    }
+
     if (xSemaphoreTake(control_sem, 0) == pdTRUE) {
-      Mobile.control(vx, vy, vw);
+      Mobile.control(odom_cmd.vx, odom_cmd.vy, odom_cmd.wz);
       counter = (counter + 1) % 10;
       if (!counter) xSemaphoreGive(update_sem);
     }
@@ -64,74 +83,51 @@ void control_loop(void *pv) {
 }
 
 void loop() {
-  uint64_t time = micros();
-
   if (xSemaphoreTake(update_sem, 0) == pdTRUE) {
-
-    imu_data = Mobile.getIMU();
+    // imu_data = Mobile.getIMU();
     odom_data = Mobile.getODOM();
 
-    // Serial.print(Mobile.qd_target[0]);
-    // Serial.print(" ");
-    // Serial.print(Mobile.qd_target[1]);
-    // Serial.print(" ");
-    // Serial.print(Mobile.qd_target[2]);
-    // Serial.print(" ");
-    // Serial.print(Mobile.qd_target[3]);
-    // Serial.print(" ");
+    esp_msgs.buff[0].f64 = odom_data.vx;
+    esp_msgs.buff[1].f64 = odom_data.vy;
+    esp_msgs.buff[2].f64 = odom_data.wz;
 
-    Serial.print(Mobile.fb_qd[0]);
-    Serial.print(" ");
-    Serial.print(Mobile.fb_qd[1]);
-    Serial.print(" ");
-    Serial.print(Mobile.fb_qd[2]);
-    Serial.print(" ");
-    Serial.print(Mobile.fb_qd[3]);
-    Serial.print(" ");
+    esp_msgs.buff[3].f64 = imu_data.gyro.x;
+    esp_msgs.buff[4].f64 = imu_data.gyro.y;
+    esp_msgs.buff[5].f64 = imu_data.gyro.z;
 
-    Serial.print(15);
-    Serial.print(" ");
-    Serial.println(-15);
-  }
+    esp_msgs.buff[6].f64 = imu_data.accel.x;
+    esp_msgs.buff[7].f64 = imu_data.accel.y;
+    esp_msgs.buff[8].f64 = imu_data.accel.z;
 
-  //Cmd loop
-  if (time - timestamp_cmd > timestep_cmd) {
-    timestamp_cmd = time;
-    if (flag == 0) {
-      flag = 1;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 1) {
-      flag = 2;
-      vx = 1;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 2) {
-      flag = 3;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 3) {
-      flag = 4;
-      vx = 0;
-      vy = 1;
-      vw = 0;
-    } else if (flag == 4) {
-      flag = 5;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 5) {
-      flag = 6;
-      vx = 0;
-      vy = 0;
-      vw = 1;
-    } else if (flag == 6) {
-      flag = 6;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    }
+    esp_msgs.buff[9].f64 = imu_data.quat.x;
+    esp_msgs.buff[10].f64 = imu_data.quat.y;
+    esp_msgs.buff[11].f64 = imu_data.quat.z;
+    esp_msgs.buff[12].f64 = imu_data.quat.w;
+
+    encode_msg2buffer(&esp_msgs, tx_msg_buffer, sizeof(tx_msg_buffer));
+    Serial.write(tx_msg_buffer, (esp_msgs.buff_size * 8) + 4);
+    Serial.println(' ');
   }
 }
+
+// Serial.print(Mobile.qd_target[0]);
+// Serial.print(" ");
+// Serial.print(Mobile.qd_target[1]);
+// Serial.print(" ");
+// Serial.print(Mobile.qd_target[2]);
+// Serial.print(" ");
+// Serial.print(Mobile.qd_target[3]);
+// Serial.print(" ");
+
+// Serial.print(Mobile.fb_qd[0]);
+// Serial.print(" ");
+// Serial.print(Mobile.fb_qd[1]);
+// Serial.print(" ");
+// Serial.print(Mobile.fb_qd[2]);
+// Serial.print(" ");
+// Serial.print(Mobile.fb_qd[3]);
+// Serial.print(" ");
+
+// Serial.print(15);
+// Serial.print(" ");
+// Serial.println(-15);
