@@ -36,7 +36,7 @@ void Manipulator_command::begin() {
   // while (!bno.begin()) vTaskDelay(10 / portTICK_PERIOD_MS);
   // bno.setExtCrystalUse(true);
 
-  delay(10);
+  delay(100);
 
   for (int i = 0; i < NUM_MOTORS; i++) {
     Mx[i]->begin();
@@ -64,7 +64,7 @@ void Manipulator_command::begin() {
     encx[3]->reset();
   });
 
-  delay(10);
+  delay(100);
 }
 
 void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
@@ -78,7 +78,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   fb_qd[M_index] = kf_ptr[1];
   fb_i[M_index] = kf_ptr[3];
 
-  if (abs(targetPosition[M_index] - fb_q[M_index]) > 0.01) {
+  if (abs(targetPosition - fb_q[M_index]) > 0.01) {
 
     if (q_target[M_index] - fb_q[M_index] != 0) {
       
@@ -95,13 +95,13 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
       cmd_ux[M_index] = 0;
     }
     
-    if(M_indecx == 0){
+    if(M_index == 0){
       digitalWrite(10, HIGH);
     }
     Mx[M_index]->set_duty(cmd_ux[M_index]);
   } else {
     cmd_ux[M_index] = 0;
-    if(M_indecx == 0){
+    if(M_index == 0){
       digitalWrite(10, HIGH);
     }
   }

@@ -38,25 +38,20 @@ double newVt;
 
 void setup() {
   Serial.begin(115200);
-
-  // if (!mcp.begin_I2C()) {
-  //   Serial.println("MCP Error.");
-  //   delay(1000);
-  //   ESP.restart();
-  // }
-
   Manipulator.begin();
+  delay(5000);
+  Manipulator.setGoal(0, 0);
 }
 void loop() {
   // Read serial input
-  if (Serial.available())
-  {
-      char input = Serial.read();
-      if (input == 'k')
-      {
-          Manipulator.setHomeAll();
-      }
-  }
+  // if (Serial.available())
+  // {
+  //     char input = Serial.read();
+  //     if (input == 'k')
+  //     {
+  //         Manipulator.setHomeAll();
+  //     }
+  // }
 
   // signal = Signal_Generator(2, 12, 5000);  //wave form, Amplitude, period (ms)
 
@@ -75,58 +70,16 @@ void loop() {
     timestamp_print = micros();
     //Serial.println(signal);
     // Serial.print(" ");
-    // Serial.print(Manipulator.fb_q[0]);
+    Serial.print(Manipulator.fb_q[0]);
+    Serial.print(" ");
+    Serial.println(Manipulator.q_target[0]);
     // Serial.print(" ");
-    // Serial.print(Manipulator.q_target[0]);
-    // Serial.print(" ");
-    // Serial.print(Manipulator.fb_qd[0]);
+    // Serial.println(Manipulator.fb_qd[0]);
     // Serial.print(" ");
     // Serial.println(Manipulator.qd_target[0]);
     // Serial.print(" ");
     // Serial.println(Manipulator.fb_qd[0]);
     // q_prev = Manipulator.fb_q[0];
-  }
-
-  //Cmd loop
-  current_timestep_cmd = micros();
-  if (current_timestep_cmd - timestamp_cmd > timestep_cmd) {
-    timestamp_cmd = micros();
-    if (flag == 0) {
-      flag = 1;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 1) {
-      flag = 2;
-      vx = 1;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 2) {
-      flag = 3;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 3) {
-      flag = 4;
-      vx = 0;
-      vy = 1;
-      vw = 0;
-    } else if (flag == 4) {
-      flag = 5;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    } else if (flag == 5) {
-      flag = 6;
-      vx = 0;
-      vy = 0;
-      vw = 1;
-    } else if (flag == 6) {
-      flag = 6;
-      vx = 0;
-      vy = 0;
-      vw = 0;
-    }
   }
 
   //Control loop
@@ -140,8 +93,8 @@ void loop() {
     // Mx[2]->set_duty(signal);
     // Mx[3]->set_duty(signal);
     //Manipulator.tune(1, );
-    // Manipulator.setGoal(0, newVt);
-    Manipulator.pollHoming();
+    Manipulator.setGoal(0, 30);
+    // Manipulator.pollHoming();
   }
 
 
