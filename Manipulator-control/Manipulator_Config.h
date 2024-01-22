@@ -62,8 +62,8 @@
 #define ENC_1_B_PIN 33
 #define ENC_2_A_PIN 36
 #define ENC_2_B_PIN 35
-#define ENC_3_A_PIN 37
-#define ENC_3_B_PIN 38
+#define ENC_3_A_PIN 38
+#define ENC_3_B_PIN 37
 
 #define ENC_H_PPR 2048.0 * 4.0
 #define ENC_1_PPR 64.0 * 12.0 * 4.0

@@ -45,6 +45,9 @@ void setup() {
 
   delay(5000);
   Manipulator.setGoal(0, 0);
+  Manipulator.setGoal(1, 0);
+  Manipulator.setGoal(2, 0);
+  Manipulator.setGoal(3, 0);
 }
 void loop() {
   // signal = Signal_Generator(2, 12, 5000);  //wave form, Amplitude, period (ms)
@@ -68,6 +71,12 @@ void loop() {
     // Serial.print(encx[0]->get_diff_count());
     // Serial.print(" ");
     Serial.print(Manipulator.fb_q[0]);
+    Serial.print(" ");
+    Serial.print(Manipulator.fb_q[1]);
+    Serial.print(" ");
+    Serial.print(Manipulator.fb_q[2]);
+    Serial.print(" ");
+    Serial.print(Manipulator.fb_q[3]);
     Serial.print(" ");
     Serial.print(Manipulator.q_target[0]);
     Serial.print(" ");
@@ -93,6 +102,9 @@ void loop() {
     // Mx[3]->set_duty(signal);
     // //Manipulator.tune(1, );
     Manipulator.setGoal(0, 15);
+    Manipulator.setGoal(1, 5);
+    Manipulator.setGoal(2, 5);
+    Manipulator.setGoal(3, 5);
   }
 
 
