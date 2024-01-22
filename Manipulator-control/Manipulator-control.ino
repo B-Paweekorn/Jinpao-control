@@ -35,12 +35,12 @@ float q_prev = 0;
 
 double newVt;
 
-
+int32_t counter0 = 0;
 void setup() {
   Serial.begin(115200);
   Manipulator.begin();
   delay(5000);
-  Manipulator.setGoal(0, 0);
+  // Manipulator.setGoal(0, 0);
 }
 void loop() {
   // Read serial input
@@ -68,11 +68,13 @@ void loop() {
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
+    counter0 += (encx[0]->get_diff_count());
+    Serial.println(counter0);
     // Serial.print(encx[0]->get_diff_count());
     // Serial.print(" ");
-    Serial.print(Manipulator.fb_q[0]);
-    Serial.print(" ");
-    Serial.println(Manipulator.q_target[0]);
+    // Serial.print(Manipulator.fb_q[0]);
+    // Serial.print(" ");
+    // Serial.println(Manipulator.q_target[0]);
     // Serial.print(" ");
     // Serial.println(Manipulator.fb_qd[0]);
     // Serial.print(" ");
@@ -92,8 +94,8 @@ void loop() {
     // Mx[1]->set_duty(signal);
     // Mx[2]->set_duty(signal);
     // Mx[3]->set_duty(signal);
-    //Manipulator.tune(1, );
-    Manipulator.setGoal(0, 15);
+    // //Manipulator.tune(1, );
+    // Manipulator.setGoal(0, 15);
     // Manipulator.pollHoming();
   }
 

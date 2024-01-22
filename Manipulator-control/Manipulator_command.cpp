@@ -53,6 +53,8 @@ void Manipulator_command::begin() {
       Mx[i]->set_duty(speed);
     });
 
+    // tpx[i]->update(0);
+
     hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
     hcx[i]->attachCompleteCallback([this, i]() {
       encx[i]->reset();
