@@ -68,7 +68,7 @@ void loop() {
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
-    //Serial.println(signal);
+    // Serial.print(encx[0]->get_diff_count());
     // Serial.print(" ");
     Serial.print(Manipulator.fb_q[0]);
     Serial.print(" ");
@@ -93,7 +93,7 @@ void loop() {
     // Mx[2]->set_duty(signal);
     // Mx[3]->set_duty(signal);
     //Manipulator.tune(1, );
-    Manipulator.setGoal(0, 30);
+    Manipulator.setGoal(0, 15);
     // Manipulator.pollHoming();
   }
 
