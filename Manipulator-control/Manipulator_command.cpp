@@ -1,3 +1,4 @@
+#include "esp32-hal-gpio.h"
 #include "rom/spi_flash.h"
 #include "Manipulator_Config.h"
 #include "Wire.h"
@@ -19,10 +20,11 @@ Manipulator_command::Manipulator_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], P
 }
 
 void Manipulator_command::begin() {
+  pinMode(10, OUTPUT);
   for (int i = 0; i < NUM_MOTORS; i++) {
     encx[i]->begin();
   }
-  
+
   Wire.begin(MCP_SDA, MCP_SCL);
   if (!mcp.begin_I2C()) {
     Serial.println("MCP Error.");
@@ -49,22 +51,22 @@ void Manipulator_command::begin() {
 
     encx[i]->reset();
     kfx[i]->begin();
-  //   hcx[i]->attachMotor([this, i](float speed) {
-  //     Mx[i]->set_duty(speed);
-  //   });
+    //   hcx[i]->attachMotor([this, i](float speed) {
+    //     Mx[i]->set_duty(speed);
+    //   });
 
-  //   // tpx[i]->update(0);
+    //   // tpx[i]->update(0);
 
-  //   hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
-  //   hcx[i]->attachCompleteCallback([this, i]() {
-  //     encx[i]->reset();
-  //   });
-  // }
-  // hcx[3]->setTripCurrent(MOTOR_H_CURRENT_LIMIT);
-  // hcx[3]->setBrakePin(MOTOR_H_BRAKE_PIN, 1);
-  // hcx[3]->attachCompleteCallback([this]() {
-  //   encx[3]->reset();
-  // });
+    //   hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
+    //   hcx[i]->attachCompleteCallback([this, i]() {
+    //     encx[i]->reset();
+    //   });
+    // }
+    // hcx[3]->setTripCurrent(MOTOR_H_CURRENT_LIMIT);
+    // hcx[3]->setBrakePin(MOTOR_H_BRAKE_PIN, 1);
+    // hcx[3]->attachCompleteCallback([this]() {
+    //   encx[3]->reset();
+    // });
   }
 
   delay(100);
@@ -102,9 +104,9 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
 }
 
 void Manipulator_command::tunesetGoal(uint8_t M_index, float targetPosition) {
-
+  float state = 0;
   if (M_index != 0) {
-
+    state = 1;
     q_target[M_index] = tpx[M_index]->update(targetPosition);
     qd_target[M_index] = tpx[M_index]->getVelocity();
 
@@ -114,17 +116,15 @@ void Manipulator_command::tunesetGoal(uint8_t M_index, float targetPosition) {
     fb_qd[M_index] = kf_ptr[1];
     fb_i[M_index] = kf_ptr[3];
 
-    if (abs(targetPosition - fb_q[M_index]) > 0.03) {
-
+    if (abs(q_target[M_index] - fb_q[M_index]) > 0.01) {
+      state = 1.1;
       if (q_target[M_index] - fb_q[M_index] != 0) {
-
         cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
       } else {
         cmd_vx[M_index] = 0;
       }
 
       if (qd_target[M_index] + cmd_vx[M_index] != 0) {
-
         cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index]) + ffdx[M_index]->Compute(qd_target[M_index], i_gain[M_index] * fb_i[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
 
       } else {
@@ -137,10 +137,11 @@ void Manipulator_command::tunesetGoal(uint8_t M_index, float targetPosition) {
     }
     Mx[M_index]->set_duty(cmd_ux[M_index]);
 
-  } else {
-    static uint8_t prev_targetPosition = 0;
-    static uint8_t isBreak = 0;
+    Serial.println(state);
 
+
+
+  } else {
     q_target[M_index] = tpx[M_index]->update(targetPosition);
     qd_target[M_index] = tpx[M_index]->getVelocity();
 
@@ -153,33 +154,31 @@ void Manipulator_command::tunesetGoal(uint8_t M_index, float targetPosition) {
     if (targetPosition != prev_targetPosition) {
       isBreak = 0;
       digitalWrite(10, LOW);
+      Serial.println("Unlock");
     }
+    prev_targetPosition = targetPosition;
 
-
-    if (abs(targetPosition - fb_q[M_index]) > 0.03 && isBreak == 0) {
-
+    if (abs(targetPosition - fb_q[M_index]) > 0.02 && isBreak == 0) {
       if (q_target[M_index] - fb_q[M_index] != 0) {
-
         cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
       } else {
         cmd_vx[M_index] = 0;
       }
 
       if (qd_target[M_index] + cmd_vx[M_index] != 0) {
-
         cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index]) + ffdx[M_index]->Compute(qd_target[M_index], i_gain[M_index] * fb_i[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
 
       } else {
         cmd_ux[M_index] = 0;
       }
 
-      if (M_index == 0) {
-        digitalWrite(10, LOW);
+      if (abs(targetPosition - fb_q[M_index]) < 0.03) {
+        isBreak = 1;
       }
     } else {
       cmd_ux[M_index] = 0;
-      isBreak = 1;
       digitalWrite(10, HIGH);
+      Serial.println("lock");
     }
     Mx[M_index]->set_duty(cmd_ux[M_index]);
   }

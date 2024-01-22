@@ -42,7 +42,8 @@ public:
   double fb_q[NUM_MOTORS];
   float fb_qd[NUM_MOTORS];
   float fb_i[NUM_MOTORS];
-
+  float prev_targetPosition = 0;
+  uint8_t isBreak = 0;
 
   Manipulator_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], PID_CONTROLLER* _pidx_pos[], PID_CONTROLLER* _pidx_vel[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], MotionGenerator* _tpx[], Homing_controller* _hcx[], Adafruit_MCP23X17& mcpRef);
 

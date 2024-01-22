@@ -40,7 +40,7 @@ void setup() {
   Serial.begin(115200);
   Manipulator.begin();
   delay(5000);
-  Manipulator.setGoal(0, 0);
+  Manipulator.tunesetGoal(0, 0);
 }
 void loop() {
   // Read serial input
@@ -95,7 +95,7 @@ void loop() {
     // Mx[2]->set_duty(signal);
     // Mx[3]->set_duty(signal);
     // //Manipulator.tune(1, );
-    Manipulator.setGoal(0, 15);
+    Manipulator.tunesetGoal(0, 15);
     // Manipulator.pollHoming();
   }
 
