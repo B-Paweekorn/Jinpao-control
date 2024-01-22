@@ -101,27 +101,88 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   }
 }
 
-void Manipulator_command::tune(uint8_t M_index, float target) {
+void Manipulator_command::tunesetGoal(uint8_t M_index, float targetPosition) {
 
-  //q_target[M_index] = tpx[M_index]->update(target);
-  qd_target[M_index] = target;
+  if (M_index != 0) {
+
+    q_target[M_index] = tpx[M_index]->update(targetPosition);
+    qd_target[M_index] = tpx[M_index]->getVelocity();
+
+    fb_q[M_index] += encx[M_index]->get_diff_count() * 2 * M_PI / ppr[M_index];
+    float* kf_ptr = kfx[M_index]->Compute(fb_q[M_index], cmd_ux[M_index] * ffdx[M_index]->Vmax / ffdx[M_index]->Umax);
+
+    fb_qd[M_index] = kf_ptr[1];
+    fb_i[M_index] = kf_ptr[3];
+
+    if (abs(targetPosition - fb_q[M_index]) > 0.03) {
+
+      if (q_target[M_index] - fb_q[M_index] != 0) {
+
+        cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
+      } else {
+        cmd_vx[M_index] = 0;
+      }
+
+      if (qd_target[M_index] + cmd_vx[M_index] != 0) {
+
+        cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index]) + ffdx[M_index]->Compute(qd_target[M_index], i_gain[M_index] * fb_i[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
+
+      } else {
+        cmd_ux[M_index] = 0;
+      }
 
 
-  fb_q[M_index] += encx[M_index]->get_diff_count() * 2 * M_PI / encx[M_index]->pulse_per_rev;
+    } else {
+      cmd_ux[M_index] = 0;
+    }
+    Mx[M_index]->set_duty(cmd_ux[M_index]);
 
-  float* kf_ptr = kfx[M_index]->Compute(fb_q[M_index], cmd_ux[M_index] * ffdx[M_index]->Vmax / ffdx[M_index]->Umax);
-  //float* kf_ptr = kfx[M_index]->Compute(fb_q[M_index], target * ffdx[M_index]->Vmax / ffdx[M_index]->Umax);
-
-  fb_qd[M_index] = kf_ptr[1];
-  fb_i[M_index] = kf_ptr[3];
-
-  if (qd_target[M_index] != 0) {
-    cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] - fb_qd[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);  //+ ffdx[M_index]->Compute(qd_target[M_index], CURRENT_GAIN * fb_i[M_index])
   } else {
-    cmd_ux[M_index] = 0;
-  }
+    static uint8_t prev_targetPosition = 0;
+    static uint8_t isBreak = 0;
 
-  Mx[M_index]->set_duty(target);  //cmd_ux[M_index]
+    q_target[M_index] = tpx[M_index]->update(targetPosition);
+    qd_target[M_index] = tpx[M_index]->getVelocity();
+
+    fb_q[M_index] += encx[M_index]->get_diff_count() * 2 * M_PI / ppr[M_index];
+    float* kf_ptr = kfx[M_index]->Compute(fb_q[M_index], cmd_ux[M_index] * ffdx[M_index]->Vmax / ffdx[M_index]->Umax);
+
+    fb_qd[M_index] = kf_ptr[1];
+    fb_i[M_index] = kf_ptr[3];
+
+    if (targetPosition != prev_targetPosition) {
+      isBreak = 0;
+      digitalWrite(10, LOW);
+    }
+
+
+    if (abs(targetPosition - fb_q[M_index]) > 0.03 && isBreak == 0) {
+
+      if (q_target[M_index] - fb_q[M_index] != 0) {
+
+        cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
+      } else {
+        cmd_vx[M_index] = 0;
+      }
+
+      if (qd_target[M_index] + cmd_vx[M_index] != 0) {
+
+        cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index]) + ffdx[M_index]->Compute(qd_target[M_index], i_gain[M_index] * fb_i[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
+
+      } else {
+        cmd_ux[M_index] = 0;
+      }
+
+      if (M_index == 0) {
+        digitalWrite(10, LOW);
+      }
+    } else {
+      cmd_ux[M_index] = 0;
+      isBreak = 1;
+      digitalWrite(10, HIGH);
+    }
+    Mx[M_index]->set_duty(cmd_ux[M_index]);
+  }
 }
 
 void Manipulator_command::setHome(uint8_t M_index) {

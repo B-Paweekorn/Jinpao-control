@@ -49,7 +49,7 @@ public:
   void begin();
 
   void setGoal(uint8_t M_index, float targetPosition);
-  void tune(uint8_t M_index, float target);
+  void tunesetGoal(uint8_t M_index, float targetPosition);
   void setHomeAll();
   void pollHoming();
   void setHome(uint8_t M_index);
