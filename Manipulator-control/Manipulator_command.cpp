@@ -22,7 +22,7 @@ void Manipulator_command::begin() {
   for (int i = 0; i < NUM_MOTORS; i++) {
     encx[i]->begin();
   }
-
+  
   Wire.begin(MCP_SDA, MCP_SCL);
   if (!mcp.begin_I2C()) {
     Serial.println("MCP Error.");
@@ -49,22 +49,23 @@ void Manipulator_command::begin() {
 
     encx[i]->reset();
     kfx[i]->begin();
-    hcx[i]->attachMotor([this, i](float speed) {
-      Mx[i]->set_duty(speed);
-    });
+  //   hcx[i]->attachMotor([this, i](float speed) {
+  //     Mx[i]->set_duty(speed);
+  //   });
 
-    // tpx[i]->update(0);
+  //   // tpx[i]->update(0);
 
-    hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
-    hcx[i]->attachCompleteCallback([this, i]() {
-      encx[i]->reset();
-    });
+  //   hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
+  //   hcx[i]->attachCompleteCallback([this, i]() {
+  //     encx[i]->reset();
+  //   });
+  // }
+  // hcx[3]->setTripCurrent(MOTOR_H_CURRENT_LIMIT);
+  // hcx[3]->setBrakePin(MOTOR_H_BRAKE_PIN, 1);
+  // hcx[3]->attachCompleteCallback([this]() {
+  //   encx[3]->reset();
+  // });
   }
-  hcx[3]->setTripCurrent(MOTOR_H_CURRENT_LIMIT);
-  hcx[3]->setBrakePin(MOTOR_H_BRAKE_PIN, 1);
-  hcx[3]->attachCompleteCallback([this]() {
-    encx[3]->reset();
-  });
 
   delay(100);
 }
@@ -80,7 +81,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   fb_qd[M_index] = kf_ptr[1];
   fb_i[M_index] = kf_ptr[3];
 
-  if (abs(targetPosition - fb_q[M_index]) > 0.03) {
+  if (abs(targetPosition - fb_q[M_index]) > 0.01) {
 
     if (q_target[M_index] - fb_q[M_index] != 0) {
 
@@ -96,14 +97,8 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
     } else {
       cmd_ux[M_index] = 0;
     }
-
-    if (M_index == 0) {
-      digitalWrite(10, LOW);
-    }
-  } else {
-    cmd_ux[M_index] = 0;
+    Mx[M_index]->set_duty(cmd_ux[M_index]);
   }
-  Mx[M_index]->set_duty(cmd_ux[M_index]);
 }
 
 void Manipulator_command::tune(uint8_t M_index, float target) {

@@ -35,7 +35,7 @@ private:
 public:
   float q_target[NUM_MOTORS];
   float qd_target[NUM_MOTORS];
-  float i_gain[NUM_MOTORS] = { (18.0 / 26.6), (9.0 / 145.0), (9.0 / 145.0), (9.0 / 145.0) };
+  float i_gain[NUM_MOTORS] = { (9.0 / 145.0), (9.0 / 145.0), (9.0 / 145.0), (9.0 / 145.0) };
   float ppr[NUM_MOTORS] = { 8192.0, 3072.0, 3072.0, 3072.0 };
   int16_t cmd_vx[NUM_MOTORS];
   int16_t cmd_ux[NUM_MOTORS];
