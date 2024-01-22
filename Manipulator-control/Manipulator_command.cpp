@@ -104,7 +104,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   }
 }
 
-void Manipulator_command::tune(uint8_t M_index, float target) {
+void Manipulator_command::tunesetGoal(uint8_t M_index, float target) {
 
   //q_target[M_index] = tpx[M_index]->update(target);
   qd_target[M_index] = target;
