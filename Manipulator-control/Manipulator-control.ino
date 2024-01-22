@@ -44,14 +44,14 @@ void setup() {
 }
 void loop() {
   // Read serial input
-  // if (Serial.available())
-  // {
-  //     char input = Serial.read();
-  //     if (input == 'k')
-  //     {
-  //         Manipulator.setHomeAll();
-  //     }
-  // }
+  if (Serial.available())
+  {
+      char input = Serial.read();
+      if (input == 'k')
+      {
+          Manipulator.setHomeAll();
+      }
+  }
 
   // signal = Signal_Generator(2, 12, 5000);  //wave form, Amplitude, period (ms)
 
@@ -98,7 +98,7 @@ void loop() {
     // Mx[3]->set_duty(signal);
     // //Manipulator.tune(1, );
     Manipulator.setGoal(0, 15);
-    // Manipulator.pollHoming();
+    Manipulator.pollHoming();
   }
 
 

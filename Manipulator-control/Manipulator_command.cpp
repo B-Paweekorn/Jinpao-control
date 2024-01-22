@@ -25,7 +25,7 @@ void Manipulator_command::begin() {
   
   Wire.begin(MCP_SDA, MCP_SCL);
   if (!mcp.begin_I2C()) {
-    Serial.println("MCP Error.");
+    Serial.println("################ MCP Error ################");
     delay(1000);
     ESP.restart();
   } else {
@@ -128,14 +128,20 @@ void Manipulator_command::setHome(uint8_t M_index) {
 }
 
 void Manipulator_command::setHomeAll() {
-  for (int i = 0; i < NUM_MOTORS; i++) {
+  for (int i = 1; i < NUM_MOTORS; i++) {
     hcx[i]->home();
     // Mx[i]->set_duty(-5000);
   }
 }
 
 void Manipulator_command::pollHoming() {
-  for (int i = 0; i < NUM_MOTORS; i++) {
-    hcx[i]->poll_for_status();
+
+  for (int i = 1; i < NUM_MOTORS; i++) {
+    fb_q[i] += encx[i]->get_diff_count() * 2 * M_PI / ppr[i];
+    float* kf_ptr = kfx[i]->Compute(fb_q[i], cmd_ux[i] * ffdx[i]->Vmax / ffdx[i]->Umax);
+
+    fb_qd[i] = kf_ptr[1];
+    fb_i[i] = kf_ptr[3];
+    hcx[i]->poll_for_status(fb_i[i]);
   }
 }
