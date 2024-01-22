@@ -81,26 +81,20 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   fb_qd[M_index] = kf_ptr[1];
   fb_i[M_index] = kf_ptr[3];
 
-  if (abs(q_target[M_index] - fb_q[M_index]) > 0.01) {
+  if (abs(targetPosition - fb_q[M_index]) > 0.005) {
 
-    if (q_target[M_index] != 0) {
-
+    if (q_target[M_index] - fb_q[M_index] != 0.0) {
       cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
     } else {
       cmd_vx[M_index] = 0;
     }
 
     if (qd_target[M_index] + cmd_vx[M_index] != 0) {
-
       cmd_ux[M_index] = PWM_Satuation(pidx_vel[M_index]->Compute(qd_target[M_index] + cmd_vx[M_index] - fb_qd[M_index]) + ffdx[M_index]->Compute(qd_target[M_index], i_gain[M_index] * fb_i[M_index]), ffdx[M_index]->Umax, -1 * ffdx[M_index]->Umax);
-
     } else {
       cmd_ux[M_index] = 0;
     }
     Mx[M_index]->set_duty(cmd_ux[M_index]);
-  }
-  else {
-    cmd_ux[M_index] = 0;
   }
 }
 
