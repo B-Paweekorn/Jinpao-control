@@ -113,9 +113,9 @@ void loop() {
     //Serial.print(signal);
     // Serial.print(" ");
 
-    // Serial.print(Gripper.fb_q[0]);
-    // Serial.print(" ");
-    // Serial.println(Gripper.q_target[0]);
+    Serial.print(Gripper.fb_q[0]);
+    Serial.print(" ");
+    Serial.println(Gripper.q_target[0]);
 
     // Serial.print(Gripper.q_target[0], 10);
     // Serial.print(" ");
@@ -162,19 +162,20 @@ void loop() {
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    Serial.print(Gripper.fb_q[0]);
-    Serial.print(" ");
-    Serial.println(Gripper.q_target[0]);
+    Gripper.setGoal(0, 30);
+    // Serial.print(Gripper.fb_q[0]);
+    // Serial.print(" ");
+    // Serial.println(Gripper.q_target[0]);
 
-    qtarget = 30;
-    if(Gripper.q_target[0] == 30.0){
-      qtarget = Gripper.fb_q[0];
-      Serial.println("Reached");
-      digitalWrite(10, HIGH);
-    }
-    else{
-      Gripper.setGoal(0, qtarget);
-    }
+    // qtarget = 30;
+    // if(Gripper.q_target[0] == 30.0){
+    //   qtarget = Gripper.fb_q[0];
+    //   Serial.println("Reached");
+    //   digitalWrite(10, HIGH);
+    // }
+    // else{
+    //   Gripper.setGoal(0, qtarget);
+    // }
     // Mx[0]->set_duty(6 * 16383 / 12.0);
     //Mx[0]->set_duty(signal * 16383 / 12.0);
     // Gripper.setGoal(0, 30.0);
