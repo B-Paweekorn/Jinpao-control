@@ -81,9 +81,9 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   fb_qd[M_index] = kf_ptr[1];
   fb_i[M_index] = kf_ptr[3];
 
-  if (abs(targetPosition - fb_q[M_index]) > 0.01) {
+  if (abs(q_target[M_index] - fb_q[M_index]) > 0.01) {
 
-    if (q_target[M_index] - fb_q[M_index] != 0) {
+    if (q_target[M_index] != 0) {
 
       cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
     } else {
@@ -98,6 +98,9 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
       cmd_ux[M_index] = 0;
     }
     Mx[M_index]->set_duty(cmd_ux[M_index]);
+  }
+  else {
+    cmd_ux[M_index] = 0;
   }
 }
 

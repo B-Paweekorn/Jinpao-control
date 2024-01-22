@@ -31,4 +31,4 @@ float CYTRON_MOTOR_680RPM_250W_MatrixC[4] = { 1.0, 0.0, 0.0, 0.0 };
 float CYTRON_MOTOR_680RPM_250W_MatrixQ[1] = { 1 };
 
 // measurement covariance matrix
-float CYTRON_MOTOR_680RPM_250W_MatrixR[1] = { 0.0001 };
+float CYTRON_MOTOR_680RPM_250W_MatrixR[1] = { 0.001 };
