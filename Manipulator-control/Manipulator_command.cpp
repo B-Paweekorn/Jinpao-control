@@ -83,12 +83,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
 
   if (abs(q_target[M_index] - fb_q[M_index]) > 0.01) {
 
-    if (q_target[M_index] != 0) {
-
-      cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
-    } else {
-      cmd_vx[M_index] = 0;
-    }
+    cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
 
     if (qd_target[M_index] + cmd_vx[M_index] != 0) {
 
@@ -97,11 +92,12 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
     } else {
       cmd_ux[M_index] = 0;
     }
-    Mx[M_index]->set_duty(cmd_ux[M_index]);
   }
-  else {
+  else if (M_index != 0) {
     cmd_ux[M_index] = 0;
   }
+
+  Mx[M_index]->set_duty(cmd_ux[M_index]);
 }
 
 void Manipulator_command::tunesetGoal(uint8_t M_index, float target) {
