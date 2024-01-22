@@ -22,7 +22,7 @@ void Manipulator_command::begin() {
   for (int i = 0; i < NUM_MOTORS; i++) {
     encx[i]->begin();
   }
-  
+
   Wire.begin(MCP_SDA, MCP_SCL);
   if (!mcp.begin_I2C()) {
     Serial.println("################ MCP Error ################");
@@ -49,23 +49,19 @@ void Manipulator_command::begin() {
 
     encx[i]->reset();
     kfx[i]->begin();
-  //   hcx[i]->attachMotor([this, i](float speed) {
-  //     Mx[i]->set_duty(speed);
-  //   });
+    // hcx[i]->attachMotor([this, i](float speed) {
+    //   Mx[i]->set_duty(speed);
+    // });
 
-  //   // tpx[i]->update(0);
+    //   // tpx[i]->update(0);
+  }
 
+  // for (int i = 1; i < NUM_MOTORS; i++) {
   //   hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
   //   hcx[i]->attachCompleteCallback([this, i]() {
-  //     encx[i]->reset();
+  //     this->home_count++;
   //   });
   // }
-  // hcx[3]->setTripCurrent(MOTOR_H_CURRENT_LIMIT);
-  // hcx[3]->setBrakePin(MOTOR_H_BRAKE_PIN, 1);
-  // hcx[3]->attachCompleteCallback([this]() {
-  //   encx[3]->reset();
-  // });
-  }
 
   delay(100);
 }
@@ -92,8 +88,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
     } else {
       cmd_ux[M_index] = 0;
     }
-  }
-  else if (M_index != 0) {
+  } else if (M_index != 0) {
     cmd_ux[M_index] = 0;
   }
 
@@ -135,13 +130,16 @@ void Manipulator_command::setHomeAll() {
 }
 
 void Manipulator_command::pollHoming() {
-
-  for (int i = 1; i < NUM_MOTORS; i++) {
-    fb_q[i] += encx[i]->get_diff_count() * 2 * M_PI / ppr[i];
-    float* kf_ptr = kfx[i]->Compute(fb_q[i], cmd_ux[i] * ffdx[i]->Vmax / ffdx[i]->Umax);
-
-    fb_qd[i] = kf_ptr[1];
-    fb_i[i] = kf_ptr[3];
-    hcx[i]->poll_for_status(fb_i[i]);
+  while(this->home_count < 3) {
+    Serial.print(this->home_count);
+    Serial.println("/3 homing successfully.");
+    for (int i = 1; i < NUM_MOTORS; i++) {
+      hcx[i]->poll_for_status(fb_i[i]);
+    }
   }
+
+  // homing finished
+  // encx[1]->reset();
+  // encx[2]->reset();
+  // encx[3]->reset();
 }

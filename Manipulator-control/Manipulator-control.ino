@@ -38,21 +38,15 @@ double newVt;
 int32_t counter0 = 0;
 void setup() {
   Serial.begin(115200);
+
   Manipulator.begin();
+  // Manipulator.setHomeAll();
+  // Manipulator.pollHoming();
+
   delay(5000);
   Manipulator.setGoal(0, 0);
 }
 void loop() {
-  // Read serial input
-  if (Serial.available())
-  {
-      char input = Serial.read();
-      if (input == 'k')
-      {
-          Manipulator.setHomeAll();
-      }
-  }
-
   // signal = Signal_Generator(2, 12, 5000);  //wave form, Amplitude, period (ms)
 
   // if (Serial.available() > 0) {
@@ -68,8 +62,9 @@ void loop() {
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
-    // counter0 += (encx[0]->get_diff_count());
-    // Serial.println(counter0);
+    // counter0 += (encx[1]->get_diff_count());
+    // Serial.print(counter0);
+    // Serial.print(" ");
     // Serial.print(encx[0]->get_diff_count());
     // Serial.print(" ");
     Serial.print(Manipulator.fb_q[0]);
@@ -98,7 +93,6 @@ void loop() {
     // Mx[3]->set_duty(signal);
     // //Manipulator.tune(1, );
     Manipulator.setGoal(0, 15);
-    Manipulator.pollHoming();
   }
 
 
