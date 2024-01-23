@@ -45,6 +45,19 @@ void Mobile_command::begin() {
   while (!bno.begin()) delay(1);
   bno.setExtCrystalUse(true);
 
+  adafruit_bno055_offsets_t calibrationData;
+  calibrationData.accel_offset_x = -40;
+  calibrationData.accel_offset_y = 71;
+  calibrationData.accel_offset_z = -33;
+  calibrationData.gyro_offset_x = 1;
+  calibrationData.gyro_offset_y = 3;
+  calibrationData.gyro_offset_z = 0;
+  calibrationData.mag_offset_z = -33;
+  calibrationData.mag_offset_x = 1;
+  calibrationData.mag_offset_y = 3;
+  calibrationData.accel_radius = 1000;
+  calibrationData.mag_radius = 870;
+  bno.setSensorOffsets(calibrationData);
   delay(1000);
 }
 
