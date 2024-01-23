@@ -103,5 +103,5 @@ PID_CONTROLLER* pidx_vel[4] = { &pidH_vel, &pid1_vel, &pid2_vel, &pid3_vel  };
 DC_MOTOR_FFD* ffdx[4] = { &ffdH, &ffd1, &ffd2, &ffd3  };
 KalmanFilter* kfx[4] = { &kfH, &kf1, &kf2, &kf3  };
 MotionGenerator* tpx[4] = { &tpH, &tp1, &tp2, &tp3  };
-Homing_controller* hcx[4] = { &hc1, &hc2, &hc3, &hcH };
+Homing_controller* hcx[4] = { &hcH, &hc1, &hc2, &hc3 };
 

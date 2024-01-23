@@ -101,6 +101,9 @@ void Homing_controller::setTripCurrent(float current)
  */
 void Homing_controller::home()
 {
+  // Serial.print(this->homing_pin);
+  // Serial.println(" started homing");
+
     // check on entry if the motor is already at home
     bool pin_state = false;
     if (this->mcp_flag)
@@ -143,6 +146,8 @@ void Homing_controller::home()
     if (this->fn_motor)
     {
         this->fn_motor(this->homing_speed);
+        // Serial.print(this->homing_pin);
+        // Serial.println(" started motor");
     }
 }
 
@@ -289,8 +294,8 @@ void Homing_controller::completeCallback()
     if (this->complete_callback)
         this->complete_callback();
 
-    Serial.print(this->homing_pin);
-    Serial.println(" completed homing");
+    // Serial.print(this->homing_pin);
+    // Serial.println(" completed homing");
 }
 
 /**
@@ -302,6 +307,6 @@ void Homing_controller::failCallback(int8_t status)
     if (this->fail_callback)
         this->fail_callback(status);
 
-    Serial.print(this->homing_pin);
-    Serial.println(" failed homing");
+    // Serial.print(this->homing_pin);
+    // Serial.println(" failed homing");
 }

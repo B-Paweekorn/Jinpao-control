@@ -30,6 +30,7 @@ private:
 
   uint32_t timestamp[NUM_MOTORS];
   float target[NUM_MOTORS];
+  uint8_t home_count = 0;
 
 
 public:
