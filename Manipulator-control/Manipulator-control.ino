@@ -97,7 +97,7 @@ void loop() {
     // Mx[2]->set_duty(signal);
     // Mx[3]->set_duty(signal);
     // //Manipulator.tune(1, );
-    Manipulator.setGoal(0, 15);
+    Manipulator.setGoal(0, 15 );
     // Manipulator.pollHoming();
   }
 

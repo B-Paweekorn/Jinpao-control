@@ -1,3 +1,4 @@
+#include "esp32-hal-gpio.h"
 #include "rom/spi_flash.h"
 #include "Manipulator_Config.h"
 #include "Wire.h"
@@ -22,7 +23,7 @@ void Manipulator_command::begin() {
   for (int i = 0; i < NUM_MOTORS; i++) {
     encx[i]->begin();
   }
-  
+
   Wire.begin(MCP_SDA, MCP_SCL);
   if (!mcp.begin_I2C()) {
     Serial.println("MCP Error.");
@@ -31,6 +32,9 @@ void Manipulator_command::begin() {
   } else {
     Serial.println("MCP Init OK");
   }
+
+  pinMode(10, OUTPUT);
+  digitalWrite(10, LOW);
 
   // Wire1.begin(BNO_SDA, BNO_SCL, 400000);
   // while (!bno.begin()) vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -49,28 +53,36 @@ void Manipulator_command::begin() {
 
     encx[i]->reset();
     kfx[i]->begin();
-  //   hcx[i]->attachMotor([this, i](float speed) {
-  //     Mx[i]->set_duty(speed);
-  //   });
+    //   hcx[i]->attachMotor([this, i](float speed) {
+    //     Mx[i]->set_duty(speed);
+    //   });
 
-  //   // tpx[i]->update(0);
+    //   // tpx[i]->update(0);
 
-  //   hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
-  //   hcx[i]->attachCompleteCallback([this, i]() {
-  //     encx[i]->reset();
-  //   });
-  // }
-  // hcx[3]->setTripCurrent(MOTOR_H_CURRENT_LIMIT);
-  // hcx[3]->setBrakePin(MOTOR_H_BRAKE_PIN, 1);
-  // hcx[3]->attachCompleteCallback([this]() {
-  //   encx[3]->reset();
-  // });
+    //   hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
+    //   hcx[i]->attachCompleteCallback([this, i]() {
+    //     encx[i]->reset();
+    //   });
+    // }
+    // hcx[3]->setTripCurrent(MOTOR_H_CURRENT_LIMIT);
+    // hcx[3]->setBrakePin(MOTOR_H_BRAKE_PIN, 1);
+    // hcx[3]->attachCompleteCallback([this]() {
+    //   encx[3]->reset();
+    // });
   }
 
   delay(100);
 }
 
 void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
+  static float dof0_prev_targetpos = -1;
+  static bool break_flag = false;
+
+  if (M_index == 0 && dof0_prev_targetpos != targetPosition && break_flag == true) {
+    dof0_prev_targetpos = targetPosition;
+    break_flag = false;
+    digitalWrite(10, LOW);
+  }
 
   q_target[M_index] = tpx[M_index]->update(targetPosition);
   qd_target[M_index] = tpx[M_index]->getVelocity();
@@ -81,7 +93,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
   fb_qd[M_index] = kf_ptr[1];
   fb_i[M_index] = kf_ptr[3];
 
-  if (abs(q_target[M_index] - fb_q[M_index]) > 0.01) {
+  if (abs(targetPosition - fb_q[M_index]) > 0.01) {
 
     cmd_vx[M_index] = pidx_pos[M_index]->Compute(q_target[M_index] - fb_q[M_index]);
 
@@ -92,8 +104,13 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
     } else {
       cmd_ux[M_index] = 0;
     }
+  } else {
+    if (M_index == 0) break_flag = true;
+    cmd_ux[M_index] = 0;
   }
-  else if (M_index != 0) {
+
+  if (M_index == 0 && break_flag == true) {
+    digitalWrite(10, HIGH);
     cmd_ux[M_index] = 0;
   }
 
