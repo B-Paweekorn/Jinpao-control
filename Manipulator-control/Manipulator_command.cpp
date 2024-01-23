@@ -101,7 +101,7 @@ void Manipulator_command::setGoal(uint8_t M_index, float targetPosition) {
       cmd_ux[M_index] = 0;
     }
   } else {
-    if (M_index == 0) break_flag = true;
+    if (M_index == 0) { break_flag = true };
     cmd_ux[M_index] = 0;
   }
 
@@ -148,7 +148,7 @@ void Manipulator_command::setHomeAll() {
 }
 
 void Manipulator_command::pollHoming() {
-  while(this->home_count < 3) {
+  while (this->home_count < 3) {
     Serial.print(this->home_count);
     Serial.println("/3 homing successfully.");
     for (int i = 1; i < NUM_MOTORS; i++) {
