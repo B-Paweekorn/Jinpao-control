@@ -33,8 +33,12 @@ void Manipulator_command::begin() {
     Serial.println("MCP Init OK");
   }
 
-  pinMode(10, OUTPUT);
-  digitalWrite(10, LOW);
+  pinMode(10, OUTPUT);          // H brake: OUTPUT
+  digitalWrite(10, LOW);        // H brake
+
+  mcp.pinMode(0, OUTPUT);       // GPA0: OUTPUT
+  mcp.pinMode(1, OUTPUT);       // GPA1: OUTPUT
+  mcp.pinMode(2, OUTPUT);       // GPA2: OUTPUT
 
   // Wire1.begin(BNO_SDA, BNO_SCL, 400000);
   // while (!bno.begin()) vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -160,4 +164,9 @@ void Manipulator_command::pollHoming() {
   // encx[1]->reset();
   // encx[2]->reset();
   // encx[3]->reset();
+}
+
+void Manipulator_command::magnet(uint8_t ID, bool state) {
+  uint8_t pins[3] = {0, 1, 2};
+  mcp.digitalWrite(pins[ID], state);
 }

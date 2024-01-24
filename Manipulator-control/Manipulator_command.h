@@ -11,11 +11,11 @@
 
 class Manipulator_command {
 
-  Adafruit_MCP23X17& mcp;
 private:
   static const int NUM_MOTORS = 4;  // Number of motors, encoders, and PIDs
   float dt = 1 / 1000.0;
 
+  Adafruit_MCP23X17& mcp;
 
 
   ESP32_CYTRON_MD* Mx[NUM_MOTORS];
@@ -55,6 +55,7 @@ public:
   void setHomeAll();
   void pollHoming();
   void setHome(uint8_t M_index);
+  void magnet(uint8_t ID, bool state);
 };
 
 #endif

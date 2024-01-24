@@ -9,7 +9,7 @@
 #include "Cytron_Motor_680rpm_250W.h"
 #include "Faulhaber_2342l012cr.h"
 #include "MotionGenerator.h"
-// #include <Adafruit_MCP23X17.h>
+#include <Adafruit_MCP23X17.h>
 #include "Homing_controller.h"
 
 
