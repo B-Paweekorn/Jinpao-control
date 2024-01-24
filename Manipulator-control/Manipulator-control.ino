@@ -3,6 +3,7 @@
 #include "Manipulator_command.h"
 #include "Esp32_Cytron_MDxx.h"
 #include "SignalGenerator.h"
+#include <Adafruit_MCP23X17.h>
 
 //Print loop Time (100 Hz)
 unsigned long prev_timestep_print;
@@ -28,20 +29,34 @@ int timestep_signal = 611;
 float vx, vy, vw = 0;
 
 uint8_t flag = 0;
-Manipulator_command Manipulator(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx, hcx, mcp);
+Manipulator_command Manipulator(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx);
 
 float signal = 0;
 float q_prev = 0;
 
 double newVt;
-
 int32_t counter0 = 0;
+
+Adafruit_MCP23X17 mcp;
+
 void setup() {
   Serial.begin(115200);
 
+  Wire.begin(MCP_SDA, MCP_SCL);
+
+  if (!mcp.begin_I2C()) {
+    Serial.println("################ MCP Error ################");
+    delay(1000);
+    ESP.restart();
+  } else {
+    Serial.println("MCP Init OK");
+  }
+
+  mcp.pinMode(0, OUTPUT);       // GPA0: OUTPUT
+  mcp.pinMode(1, OUTPUT);       // GPA1: OUTPUT
+  mcp.pinMode(2, OUTPUT);       // GPA2: OUTPUT
+
   Manipulator.begin();
-  // Manipulator.setHomeAll();
-  // Manipulator.pollHoming();
 
   delay(5000);
   Manipulator.setGoal(0, 0);
@@ -79,4 +94,9 @@ void loop() {
     Manipulator.setGoal(2, 3); // max 5
     Manipulator.setGoal(3, 5); // max 5
   }
+}
+
+void magnet(uint8_t ID, bool state) {
+  uint8_t pins[3] = {0, 1, 2};
+  mcp.digitalWrite(pins[ID], state);
 }

@@ -1,13 +1,6 @@
 #include "Manipulator_Config.h"
 #include "MotionGenerator.h"
 
-Adafruit_MCP23X17 mcp;
-
-Homing_controller hc1(mcp,MOTOR_1_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
-Homing_controller hc2(mcp,MOTOR_2_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
-Homing_controller hc3(mcp,MOTOR_3_HOME_PIN,1,TIMEOUT_MOTOR_X,SPEED_MOTOR_X);
-Homing_controller hcH(mcp,MOTOR_H_HOME_PIN,1,TIMEOUT_MOTOR_H,SPEED_MOTOR_H);
-
 MotionGenerator tpH(CYTRON_MOTOR_680RPM_250W_Constant.qd_max, CYTRON_MOTOR_680RPM_250W_Constant.qdd_max, 0);
 MotionGenerator tp1(FAULHABER_2342L012CR_Constant.qd_max, FAULHABER_2342L012CR_Constant.qdd_max, 0);
 MotionGenerator tp2(FAULHABER_2342L012CR_Constant.qd_max, FAULHABER_2342L012CR_Constant.qdd_max, 0);
@@ -103,5 +96,3 @@ PID_CONTROLLER* pidx_vel[4] = { &pidH_vel, &pid1_vel, &pid2_vel, &pid3_vel  };
 DC_MOTOR_FFD* ffdx[4] = { &ffdH, &ffd1, &ffd2, &ffd3  };
 KalmanFilter* kfx[4] = { &kfH, &kf1, &kf2, &kf3  };
 MotionGenerator* tpx[4] = { &tpH, &tp1, &tp2, &tp3  };
-Homing_controller* hcx[4] = { &hcH, &hc1, &hc2, &hc3 };
-
