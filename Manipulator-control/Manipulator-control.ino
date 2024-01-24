@@ -50,26 +50,9 @@ void setup() {
   Manipulator.setGoal(3, 0);
 }
 void loop() {
-  // signal = Signal_Generator(2, 12, 5000);  //wave form, Amplitude, period (ms)
-
-  // if (Serial.available() > 0) {
-  //   // read the incoming byte:
-  //   String serialInput = Serial.readString();
-  //   newVt = serialInput.toDouble();
-  //   // say what you got:
-  //   Serial.print("I received: ");
-  //   Serial.println(serialInput);
-  // }
-
-  //Print loop
   current_timestep_print = micros();
   if (current_timestep_print - timestamp_print > timestep_print) {
     timestamp_print = micros();
-    // counter0 += (encx[1]->get_diff_count());
-    // Serial.print(counter0);
-    // Serial.print(" ");
-    // Serial.print(encx[0]->get_diff_count());
-    // Serial.print(" ");
     Serial.print(Manipulator.fb_q[0]);
     Serial.print(" ");
     Serial.print(Manipulator.fb_q[1]);
@@ -80,39 +63,20 @@ void loop() {
     Serial.print(" ");
     Serial.print(Manipulator.q_target[0]);
     Serial.print(" ");
-    Serial.println(Manipulator.cmd_ux[0]);
+    Serial.print(Manipulator.q_target[1]);
     Serial.print(" ");
-    // Serial.println(Manipulator.fb_qd[0]);
-    // Serial.print(" ");
-    // Serial.println(Manipulator.qd_target[0]);
-    // Serial.print(" ");
-    // Serial.println(Manipulator.fb_qd[0]);
-    // q_prev = Manipulator.fb_q[0];
+    Serial.print(Manipulator.q_target[2]);
+    Serial.print(" ");
+    Serial.println(Manipulator.q_target[3]);
   }
 
   //Control loop
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    // Manipulator.tune(1, signal);
-    // signal= 3276;
-    // Mx[0]->set_duty(signal);
-    // Mx[1]->set_duty(signal);
-    // Mx[2]->set_duty(signal);
-    // Mx[3]->set_duty(signal);
-    // //Manipulator.tune(1, );
-    Manipulator.setGoal(0, 15);
-    Manipulator.setGoal(1, 5);
-    Manipulator.setGoal(2, 5);
-    Manipulator.setGoal(3, 5);
+    Manipulator.setGoal(0, 15); // max 30
+    Manipulator.setGoal(1, 1); // max 5
+    Manipulator.setGoal(2, 3); // max 5
+    Manipulator.setGoal(3, 5); // max 5
   }
-
-
-  //Signal generator loop
-  // current_timestep_signal = micros();
-  // if (current_timestep_signal - timestamp_signal > timestep_signal) {
-  //   timestamp_signal = micros();
-  //   if (signal < 3276) { signal += 1; }
-  //   if (signal == 3276) { signal = 0; }
-  // }
 }
