@@ -5,8 +5,7 @@
 #include "esp32-hal.h"
 #include "Manipulator_command.h"
 
-Manipulator_command::Manipulator_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], PID_CONTROLLER* _pidx_pos[], PID_CONTROLLER* _pidx_vel[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], MotionGenerator* _tpx[], Homing_controller* _hcx[], Adafruit_MCP23X17& mcpRef)
-  : mcp(mcpRef) {
+Manipulator_command::Manipulator_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], PID_CONTROLLER* _pidx_pos[], PID_CONTROLLER* _pidx_vel[], DC_MOTOR_FFD* _ffdx[], KalmanFilter* _kfx[], MotionGenerator* _tpx[]) {
   for (int i = 0; i < NUM_MOTORS; ++i) {
     Mx[i] = _Mx[i];
     encx[i] = _encx[i];
@@ -15,7 +14,6 @@ Manipulator_command::Manipulator_command(ESP32_CYTRON_MD* _Mx[], QEI* _encx[], P
     ffdx[i] = _ffdx[i];
     kfx[i] = _kfx[i];
     tpx[i] = _tpx[i];
-    hcx[i] = _hcx[i];
   }
 }
 
@@ -24,21 +22,8 @@ void Manipulator_command::begin() {
     encx[i]->begin();
   }
 
-  Wire.begin(MCP_SDA, MCP_SCL);
-  if (!mcp.begin_I2C()) {
-    Serial.println("################ MCP Error ################");
-    delay(1000);
-    ESP.restart();
-  } else {
-    Serial.println("MCP Init OK");
-  }
-
   pinMode(10, OUTPUT);          // H brake: OUTPUT
   digitalWrite(10, LOW);        // H brake
-
-  mcp.pinMode(0, OUTPUT);       // GPA0: OUTPUT
-  mcp.pinMode(1, OUTPUT);       // GPA1: OUTPUT
-  mcp.pinMode(2, OUTPUT);       // GPA2: OUTPUT
 
   // Wire1.begin(BNO_SDA, BNO_SCL, 400000);
   // while (!bno.begin()) vTaskDelay(10 / portTICK_PERIOD_MS);
@@ -57,20 +42,8 @@ void Manipulator_command::begin() {
 
     encx[i]->reset();
     kfx[i]->begin();
-    // hcx[i]->attachMotor([this, i](float speed) {
-    //   Mx[i]->set_duty(speed);
-    // });
-
-    //   // tpx[i]->update(0);
   }
-
-  // for (int i = 1; i < NUM_MOTORS; i++) {
-  //   hcx[i]->setTripCurrent(MOTOR_X_CURRENT_LIMIT);
-  //   hcx[i]->attachCompleteCallback([this, i]() {
-  //     this->home_count++;
-  //   });
-  // }
-
+  
   delay(100);
 }
 
@@ -138,35 +111,4 @@ void Manipulator_command::tunesetGoal(uint8_t M_index, float target) {
   }
 
   Mx[M_index]->set_duty(target);  //cmd_ux[M_index]
-}
-
-void Manipulator_command::setHome(uint8_t M_index) {
-  hcx[M_index]->home();
-}
-
-void Manipulator_command::setHomeAll() {
-  for (int i = 1; i < NUM_MOTORS; i++) {
-    hcx[i]->home();
-    // Mx[i]->set_duty(-5000);
-  }
-}
-
-void Manipulator_command::pollHoming() {
-  while(this->home_count < 3) {
-    Serial.print(this->home_count);
-    Serial.println("/3 homing successfully.");
-    for (int i = 1; i < NUM_MOTORS; i++) {
-      hcx[i]->poll_for_status(fb_i[i]);
-    }
-  }
-
-  // homing finished
-  // encx[1]->reset();
-  // encx[2]->reset();
-  // encx[3]->reset();
-}
-
-void Manipulator_command::magnet(uint8_t ID, bool state) {
-  uint8_t pins[3] = {0, 1, 2};
-  mcp.digitalWrite(pins[ID], state);
 }
