@@ -9,6 +9,11 @@ unsigned long prev_timestep_print;
 unsigned long current_timestep_print;
 unsigned long timestamp_print = 0;
 int32_t timestep_print = 10000;
+//Grip loop Time (100 Hz)
+unsigned long prev_timestep_grip;
+unsigned long current_timestep_grip;
+unsigned long timestamp_grip = 0;
+int timestep_grip = 10000;
 //Control loop Time (1000 Hz)
 unsigned long prev_timestep;
 unsigned long current_timestep;
@@ -23,7 +28,8 @@ int timestep_cmd = 3e6;
 float vx, vy, vw = 0;
 
 uint8_t flag = 0;
-Gripper_command Gripper(Mx, encx, pidx_pos, pidx_vel, ffdx, kfx, tpx);
+bool Grip_status = false;
+Gripper_command Gripper(Mx, encx, pidx_pos, pidx_vel, pidx_cur, ffdx, kfx, tpx, cfbx);
 
 //float signal = 0;
 float q_prev = 0;
@@ -117,16 +123,16 @@ void loop() {
     // Serial.println();
     // Serial.print(signal);
     // Serial.print(" ");
-    // Serial.print(Gripper.fb_q[0]);
+    // Serial.println(Gripper.fb_q[0]);
     // Serial.print(" ");
-    // Serial.print(tpx[0]->getVelocity());
+    // Serial.println(Gripper.q_target[0]);
     // Serial.print(" ");
     // Serial.print(-40);
     // Serial.print(" ");
     // Serial.print(40);
     // Serial.print(" ");
 
-    Serial.println(Gripper.q_target[0]-Gripper.fb_q[0]);
+    // Serial.println(Gripper.q_target[0]-Gripper.fb_q[0]);
     // Serial.print(" ");
     // Serial.print(Gripper.q_target[0]);
     // Serial.print(" ");
@@ -149,23 +155,26 @@ void loop() {
     // q_prev = Gripper.fb_q[0];
   }
 
+  
+
+  //Grip loop
+  current_timestep_grip = micros();
+  if (current_timestep_grip - timestamp_grip > timestep_grip) {
+    timestamp_grip = micros();
+
+    Gripper.setGrip(1, 0);
+
+    Gripper.setGrip(2, 0); 
+
+  }
+
   //Control loop
   current_timestep = micros();
   if (current_timestep - timestamp > timestep) {
     timestamp = micros();
-    // Mx[0]->set_duty(6 * 16383 / 12.0);
-    //Mx[0]->set_duty(signal * 16383 / 12.0);
 
-
-    // //Kalman Filter Tunning
-    // Gripper.tune(0, signal, state);
-
-    // //Velocity Control Tunning
-    // if(state == 'V') Gripper.tune(3, signal, state);
-
-    // //Position Control Tunning
-    // if(state == 'P')
-    Gripper.setGoal(0, 100);
+    Gripper.setGoal(0, 5);
     //Gripper.setGoal(0, newVt[i]);
+
   }
 }
